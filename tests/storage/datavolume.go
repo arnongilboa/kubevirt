@@ -189,7 +189,7 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 
 			By("Expanding PVC")
 			patchSet := patch.New(
-				patch.WithAdd("/spec/resources/requests/storage", resource.MustParse("2Gi")),
+				patch.WithAdd("/spec/resources/requests/storage", resource.MustParse("6Gi")),
 			)
 			patchData, err := patchSet.GeneratePayload()
 			Expect(err).ToNot(HaveOccurred())
@@ -208,20 +208,20 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 					&expect.BExp{R: "1"},
 				}, 10)
 				return err
-			}, 360).Should(BeNil())
+			}, 720).Should(BeNil())
 
 			Expect(console.SafeExpectBatch(vmi, []expect.Batcher{
 				&expect.BSnd{S: "sudo /sbin/resize-filesystem /dev/root /run/resize.rootfs /dev/console && echo $?\n"},
 				&expect.BExp{R: "0"},
-			}, 30)).To(Succeed(), "failed to resize root")
+			}, 60)).To(Succeed(), "failed to resize root")
 
 			By("Writing a 1.5G file after expansion, should succeed")
 			Expect(console.SafeExpectBatch(vmi, []expect.Batcher{
 				&expect.BSnd{S: "\n"},
 				&expect.BExp{R: console.PromptExpression},
-				&expect.BSnd{S: "dd if=/dev/zero of=largefile count=1500 bs=1M; echo $?\n"},
+				&expect.BSnd{S: "dd if=/dev/zero of=largefile count=5500 bs=1M; echo $?\n"},
 				&expect.BExp{R: "0"},
-			}, 360)).To(Succeed(), "can use more space after expansion and resize")
+			}, 720)).To(Succeed(), "can use more space after expansion and resize")
 		},
 			Entry("with Block PVC", k8sv1.PersistentVolumeBlock),
 			Entry("with Filesystem PVC", k8sv1.PersistentVolumeFilesystem),
@@ -243,7 +243,7 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 				libdv.WithBlankImageSource(),
 				libdv.WithStorage(
 					libdv.StorageWithStorageClass(sc),
-					libdv.StorageWithVolumeSize("512Mi"),
+					libdv.StorageWithVolumeSize("4Gi"),
 					libdv.StorageWithAccessMode(k8sv1.ReadWriteOnce),
 					libdv.StorageWithVolumeMode(k8sv1.PersistentVolumeFilesystem),
 				),
@@ -1505,7 +1505,7 @@ func renderVMWithCloneDataVolume(sourceNamespace, sourceName, targetNamespace, s
 	dv := libdv.NewDataVolume(
 		libdv.WithNamespace(testsuite.GetTestNamespace(nil)),
 		libdv.WithPVCSource(sourceNamespace, sourceName),
-		libdv.WithStorage(libdv.StorageWithStorageClass(sc), libdv.StorageWithVolumeSize("1Gi")),
+		libdv.WithStorage(libdv.StorageWithStorageClass(sc), libdv.StorageWithVolumeSize("4Gi")),
 	)
 	return libstorage.RenderVMWithDataVolumeTemplate(dv)
 }

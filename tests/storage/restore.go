@@ -1174,11 +1174,11 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 			// will change this behavior it will fail.
 			DescribeTable("should restore a vm with restore size bigger then PVC size", decorators.RequiresSizeRoundUp, func(restoreToNewVM bool) {
 				vm = createVMWithCloudInit(cd.ContainerDiskCirros, snapshotStorageClass)
-				quantity, err := resource.ParseQuantity("1528Mi")
+				quantity, err := resource.ParseQuantity("4528Mi")
 				Expect(err).ToNot(HaveOccurred())
 				vm.Spec.DataVolumeTemplates[0].Spec.Storage.Resources.Requests["storage"] = quantity
 				vm, vmi = createAndStartVM(vm)
-				expectedCapacity, err := resource.ParseQuantity("2Gi")
+				expectedCapacity, err := resource.ParseQuantity("5Gi")
 				Expect(err).ToNot(HaveOccurred())
 				pvc, err := virtClient.CoreV1().PersistentVolumeClaims(vm.Namespace).Get(context.Background(), vm.Spec.DataVolumeTemplates[0].Name, metav1.GetOptions{})
 				Expect(err).ToNot(HaveOccurred())
@@ -1307,7 +1307,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 			)
 
 			DescribeTable("should restore a vm with containerdisk and blank datavolume", func(restoreToNewVM bool) {
-				quantity, err := resource.ParseQuantity("1Gi")
+				quantity, err := resource.ParseQuantity("4Gi")
 				Expect(err).ToNot(HaveOccurred())
 				vmi = libvmifact.NewCirros(
 					libvmi.WithInterface(libvmi.InterfaceDeviceWithMasqueradeBinding()),
@@ -1530,7 +1530,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 			)
 
 			DescribeTable("should restore a vm from an online snapshot with guest agent", func(restoreToNewVM bool) {
-				quantity, err := resource.ParseQuantity("1Gi")
+				quantity, err := resource.ParseQuantity("4Gi")
 				Expect(err).ToNot(HaveOccurred())
 				vmi = libvmifact.NewFedora(libnet.WithMasqueradeNetworking())
 				vmi.Namespace = testsuite.GetTestNamespace(nil)
@@ -1611,7 +1611,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 
 				By("Updating the VM template spec")
 				initialMemory := vmi.Spec.Domain.Resources.Requests[corev1.ResourceMemory]
-				newMemory := resource.MustParse("2Gi")
+				newMemory := resource.MustParse("4Gi")
 				Expect(newMemory).ToNot(Equal(initialMemory))
 
 				patchSet := patch.New(
@@ -1712,7 +1712,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 
 				BeforeEach(func() {
 					memoryDumpPVCName = "fs-pvc" + rand.String(5)
-					memoryDumpPVC = libstorage.NewPVC(memoryDumpPVCName, "1.5Gi", snapshotStorageClass)
+					memoryDumpPVC = libstorage.NewPVC(memoryDumpPVCName, "4.5Gi", snapshotStorageClass)
 					volumeMode := corev1.PersistentVolumeFilesystem
 					memoryDumpPVC.Spec.VolumeMode = &volumeMode
 					var err error
@@ -1871,7 +1871,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 					// TODO: consider ensuring network clone gets done here using StorageProfile CloneStrategy
 					dataVolume := libdv.NewDataVolume(
 						libdv.WithPVCSource(sourceDV.Namespace, sourceDV.Name),
-						libdv.WithStorage(libdv.StorageWithStorageClass(snapshotStorageClass), libdv.StorageWithVolumeSize("1Gi")),
+						libdv.WithStorage(libdv.StorageWithStorageClass(snapshotStorageClass), libdv.StorageWithVolumeSize("4Gi")),
 					)
 
 					return libvmi.NewVirtualMachine(

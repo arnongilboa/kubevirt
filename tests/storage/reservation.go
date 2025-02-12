@@ -84,7 +84,7 @@ var _ = SIGDescribe("[Serial]SCSI persistent reservation", Serial, func() {
 	// as creates a SCSI disk that supports the SCSI protocol. Hence, it can be used to test
 	// SCSI commands such as the persistent reservation
 	createSCSIDisk := func(podName, pvc string) {
-		diskSize := "1G"
+		diskSize := "4G"
 		// Create PVC where we store the backend storage for the SCSI disks
 		libstorage.CreateFSPVC(pvc, testsuite.NamespacePrivileged, diskSize, nil)
 		// Create targetcli container

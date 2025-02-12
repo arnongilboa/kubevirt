@@ -1282,7 +1282,7 @@ var _ = SIGDescribe("Hotplug", func() {
 					libdv.WithRegistryURLSource(url),
 					libdv.WithStorage(
 						libdv.StorageWithStorageClass(storageClass),
-						libdv.StorageWithVolumeSize("256Mi"),
+						libdv.StorageWithVolumeSize("4Gi"),
 					),
 					libdv.WithForceBindAnnotation(),
 				)
@@ -1702,8 +1702,8 @@ var _ = SIGDescribe("Hotplug", func() {
 
 		BeforeEach(func() {
 			libstorage.CreateStorageClass(storageClassHostPath, &immediateBinding)
-			pvNode := libstorage.CreateHostPathPvWithSizeAndStorageClass(customHostPath, testsuite.GetTestNamespace(nil), hotplugPvPath, "1Gi", storageClassHostPath)
-			libstorage.CreatePVC(customHostPath, testsuite.GetTestNamespace(nil), "1Gi", storageClassHostPath, false)
+			pvNode := libstorage.CreateHostPathPvWithSizeAndStorageClass(customHostPath, testsuite.GetTestNamespace(nil), hotplugPvPath, "4Gi", storageClassHostPath)
+			libstorage.CreatePVC(customHostPath, testsuite.GetTestNamespace(nil), "4Gi", storageClassHostPath, false)
 
 			opts := []libvmi.Option{}
 			if pvNode != "" {

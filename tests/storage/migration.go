@@ -98,8 +98,8 @@ var _ = SIGDescribe("[Serial]Volumes update with migration", Serial, func() {
 		const (
 			fsPVC            = "filesystem"
 			blockPVC         = "block"
-			size             = "1Gi"
-			sizeWithOverhead = "1.2Gi"
+			size             = "4Gi"
+			sizeWithOverhead = "4.2Gi"
 		)
 
 		waitMigrationToNotExist := func(vmiName, ns string) {
@@ -741,7 +741,7 @@ var _ = SIGDescribe("[Serial]Volumes update with migration", Serial, func() {
 		DescribeTable("should be able to add and remove a volume with the volume migration feature gate enabled", func(persist bool) {
 			const volName = "vol0"
 			ns := testsuite.GetTestNamespace(nil)
-			dv := createBlankDV(virtClient, ns, "1Gi")
+			dv := createBlankDV(virtClient, ns, "4Gi")
 			vmi := libvmifact.NewCirros(
 				libvmi.WithNamespace(ns),
 				libvmi.WithInterface(libvmi.InterfaceDeviceWithMasqueradeBinding()),
@@ -815,7 +815,7 @@ var _ = SIGDescribe("[Serial]Volumes update with migration", Serial, func() {
 		It("should be able to migrate an hotplugged volume", func() {
 			const volName = "vol0"
 			ns := testsuite.GetTestNamespace(nil)
-			dv := createBlankDV(virtClient, ns, "2G")
+			dv := createBlankDV(virtClient, ns, "4G")
 			vmi := libvmifact.NewCirros(
 				libvmi.WithNamespace(ns),
 				libvmi.WithInterface(libvmi.InterfaceDeviceWithMasqueradeBinding()),
@@ -849,7 +849,7 @@ var _ = SIGDescribe("[Serial]Volumes update with migration", Serial, func() {
 			Expect(virtClient.VirtualMachine(ns).AddVolume(context.Background(), vm.Name, addOpts)).ToNot(HaveOccurred())
 			waitForHotplugVol(vm.Name, vm.Namespace, volName)
 
-			dvDst := createBlankDV(virtClient, vm.Namespace, "2Gi")
+			dvDst := createBlankDV(virtClient, vm.Namespace, "4Gi")
 			By("Update volumes")
 			var index int
 			Eventually(func() int {

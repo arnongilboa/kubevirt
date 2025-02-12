@@ -896,7 +896,7 @@ var _ = SIGDescribe("VirtualMachineSnapshot Tests", func() {
 				const memoryDumpPVCName = "fs-pvc"
 
 				BeforeEach(func() {
-					memoryDumpPVC = libstorage.NewPVC(memoryDumpPVCName, "1.5Gi", snapshotStorageClass)
+					memoryDumpPVC = libstorage.NewPVC(memoryDumpPVCName, "4Gi", snapshotStorageClass)
 					volumeMode := corev1.PersistentVolumeFilesystem
 					memoryDumpPVC.Spec.VolumeMode = &volumeMode
 					var err error

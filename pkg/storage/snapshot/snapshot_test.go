@@ -2732,7 +2732,7 @@ func addMemoryDumpPVC(pvcs []corev1.PersistentVolumeClaim) []corev1.PersistentVo
 			VolumeName: "memorydump",
 			Resources: corev1.VolumeResourceRequirements{
 				Requests: corev1.ResourceList{
-					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse("500Mi"),
+					corev1.ResourceName(corev1.ResourceStorage): resource.MustParse("4Gi"),
 				},
 			},
 			AccessModes:      []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce},

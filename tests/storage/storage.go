@@ -1258,7 +1258,7 @@ var _ = SIGDescribe("Storage", func() {
 				vmi1.Spec.Affinity = affinityRule
 				vmi2.Spec.Affinity = affinityRule
 
-				libstorage.CreateBlockPVC(pvcClaim, testsuite.GetTestNamespace(vmi1), "500Mi")
+				libstorage.CreateBlockPVC(pvcClaim, testsuite.GetTestNamespace(vmi1), "4Gi")
 				setShareable(vmi1, diskName)
 				setShareable(vmi2, diskName)
 

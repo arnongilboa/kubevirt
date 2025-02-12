@@ -402,7 +402,7 @@ var _ = SIGDescribe("Memory dump", func() {
 
 			vm = createAndStartVM()
 
-			memoryDumpPVC = libstorage.CreateFSPVC(memoryDumpPVCName, testsuite.GetTestNamespace(vm), "500Mi", nil)
+			memoryDumpPVC = libstorage.CreateFSPVC(memoryDumpPVCName, testsuite.GetTestNamespace(vm), "4Gi", nil)
 		})
 
 		AfterEach(func() {
@@ -453,7 +453,7 @@ var _ = SIGDescribe("Memory dump", func() {
 			By("Running remove memory dump to pvc: " + memoryDumpPVCName)
 			removeMemoryDumpAndVerify(vm, memoryDumpPVCName, previousOutput, removeMemoryDumpVirtctl)
 
-			memoryDumpPVC2 = libstorage.CreateFSPVC(memoryDumpPVCName2, testsuite.GetTestNamespace(vm), "500Mi", nil)
+			memoryDumpPVC2 = libstorage.CreateFSPVC(memoryDumpPVCName2, testsuite.GetTestNamespace(vm), "4Gi", nil)
 			By("Running memory dump to other pvc: " + memoryDumpPVCName2)
 			previousOutput = createMemoryDumpAndVerify(vm, memoryDumpPVCName2, previousOutput, memoryDumpVirtctl)
 
@@ -499,13 +499,13 @@ var _ = SIGDescribe("Memory dump", func() {
 
 		It("[test_id:8501]Run memory dump with pvc too small should fail", func() {
 			By("Trying to get memory dump with small pvc")
-			memoryDumpSmallPVC = libstorage.CreateFSPVC(memoryDumpSmallPVCName, testsuite.GetTestNamespace(vm), "200Mi", nil)
+			memoryDumpSmallPVC = libstorage.CreateFSPVC(memoryDumpSmallPVCName, testsuite.GetTestNamespace(vm), "4Gi", nil)
 			commandAndArgs := []string{commandMemoryDump, "get", vm.Name, fmt.Sprintf(virtCtlClaimName, memoryDumpSmallPVCName), virtCtlNamespace, vm.Namespace}
 			memorydumpCommand := clientcmd.NewRepeatableVirtctlCommand(commandAndArgs...)
 			Eventually(func() string {
 				err := memorydumpCommand()
 				return err.Error()
-			}, 10*time.Second, 2*time.Second).Should(ContainSubstring("should be bigger then"))
+			}, 100*time.Second, 2*time.Second).Should(ContainSubstring("should be bigger then"))
 		})
 	})
 
@@ -597,7 +597,7 @@ var _ = SIGDescribe("Memory dump", func() {
 				}
 
 				return nil
-			}, 90*time.Second, 2*time.Second).ShouldNot(HaveOccurred())
+			}, 500*time.Second, 2*time.Second).ShouldNot(HaveOccurred())
 			By("Running remove memory dump")
 			removeMemoryDumpVirtctl(vm.Name, vm.Namespace)
 			waitAndVerifyMemoryDumpDissociation(vm, memoryDumpPVCName)

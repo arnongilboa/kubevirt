@@ -140,7 +140,7 @@ var _ = SIGDescribe("[rfe_id:6364]Guestfs", Label("guestfs"), func() {
 		// libguestfs-test-tool verifies the setup to run libguestfs-tools
 		It("Should successfully run libguestfs-test-tool", Label("guestfs", "FileSystem"), func() {
 			pvcClaim = "pvc-verify"
-			libstorage.CreateFSPVC(pvcClaim, ns, "500Mi", nil)
+			libstorage.CreateFSPVC(pvcClaim, ns, "4Gi", nil)
 			runGuestfsOnPVC(f, pvcClaim, ns)
 			output, _, err := execCommandLibguestfsPod(getGuestfsPodName(pvcClaim), ns, []string{"libguestfs-test-tool"})
 			Expect(err).ToNot(HaveOccurred())
@@ -149,14 +149,14 @@ var _ = SIGDescribe("[rfe_id:6364]Guestfs", Label("guestfs"), func() {
 
 		It("[posneg:positive][test_id:6480]Should successfully run guestfs command on a filesystem-based PVC", Label("guestfs", "FileSystem"), func() {
 			pvcClaim = "pvc-fs"
-			libstorage.CreateFSPVC(pvcClaim, ns, "500Mi", nil)
+			libstorage.CreateFSPVC(pvcClaim, ns, "4Gi", nil)
 			runGuestfsOnPVC(f, pvcClaim, ns)
 			verifyCanRunOnFSPVC(getGuestfsPodName(pvcClaim), ns)
 		})
 
 		It("[posneg:negative][test_id:6480]Should fail to run the guestfs command on a PVC in use", Label("guestfs", "FileSystem"), func() {
 			pvcClaim = "pvc-fail-to-run-twice"
-			libstorage.CreateFSPVC(pvcClaim, ns, "500Mi", nil)
+			libstorage.CreateFSPVC(pvcClaim, ns, "4Gi", nil)
 			runGuestfsOnPVC(f, pvcClaim, ns)
 			options := []string{"guestfs",
 				pvcClaim,
@@ -170,7 +170,7 @@ var _ = SIGDescribe("[rfe_id:6364]Guestfs", Label("guestfs"), func() {
 
 		It("[posneg:positive][test_id:6479]Should successfully run guestfs command on a block-based PVC", Label("guestfs", "Block"), decorators.RequiresBlockStorage, func() {
 			pvcClaim = "pvc-block"
-			libstorage.CreateBlockPVC(pvcClaim, ns, "500Mi")
+			libstorage.CreateBlockPVC(pvcClaim, ns, "4Gi")
 			runGuestfsOnPVC(f, pvcClaim, ns)
 			stdout, stderr, err := execCommandLibguestfsPod(getGuestfsPodName(pvcClaim), ns, []string{"guestfish", "-a", "/dev/vda", "run"})
 			Expect(stderr).To(Equal(""))
@@ -180,7 +180,7 @@ var _ = SIGDescribe("[rfe_id:6364]Guestfs", Label("guestfs"), func() {
 		})
 		It("Should successfully run guestfs command on a filesystem-based PVC setting the uid", Label("guestfs", "FileSystem"), func() {
 			pvcClaim = "pvc-fs-with-different-uid"
-			libstorage.CreateFSPVC(pvcClaim, ns, "500Mi", nil)
+			libstorage.CreateFSPVC(pvcClaim, ns, "4Gi", nil)
 			runGuestfsOnPVC(f, pvcClaim, ns, "--uid", "1002")
 			verifyCanRunOnFSPVC(getGuestfsPodName(pvcClaim), ns)
 		})
@@ -201,7 +201,7 @@ var _ = SIGDescribe("[rfe_id:6364]Guestfs", Label("guestfs"), func() {
 			defer f.closeChannel()
 			pvcClaim = "pvc-fs-with-root"
 			ns := testsuite.NamespacePrivileged
-			libstorage.CreateFSPVC(pvcClaim, ns, "500Mi", nil)
+			libstorage.CreateFSPVC(pvcClaim, ns, "4Gi", nil)
 			runGuestfsOnPVC(f, pvcClaim, ns, "--root")
 			verifyCanRunOnFSPVC(getGuestfsPodName(pvcClaim), ns)
 		})

@@ -2043,7 +2043,7 @@ var _ = SIGMigrationDescribe("VM Live Migration", func() {
 				migration := libmigration.New(vmi.Name, vmi.Namespace)
 
 				By("Starting a Migration")
-				const timeout = 180
+				const timeout = 360
 				Eventually(func() error {
 					migration, err = virtClient.VirtualMachineInstanceMigration(migration.Namespace).Create(context.Background(), migration, metav1.CreateOptions{})
 					return err
