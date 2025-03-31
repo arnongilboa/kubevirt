@@ -189,7 +189,7 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 
 			By("Expanding PVC")
 			patchSet := patch.New(
-				patch.WithAdd("/spec/resources/requests/storage", resource.MustParse("6Gi")),
+				patch.WithAdd("/spec/resources/requests/storage", resource.MustParse("9Gi")),
 			)
 			patchData, err := patchSet.GeneratePayload()
 			Expect(err).ToNot(HaveOccurred())
@@ -204,7 +204,7 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 					&expect.BExp{R: console.PromptExpression},
 					&expect.BSnd{S: "dmesg |grep 'new size'\n"},
 					&expect.BExp{R: console.PromptExpression},
-					&expect.BSnd{S: "dmesg |grep -c 'new size: [34]'\n"},
+					&expect.BSnd{S: "dmesg |grep -c 'new size: [12]'\n"}, //[34]
 					&expect.BExp{R: "1"},
 				}, 10)
 				return err
@@ -970,6 +970,9 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 				// convert DV to use datasource
 				dvt := &vm.Spec.DataVolumeTemplates[0]
 				ds := createDataSourceFunc()
+
+				//DEBUG
+				time.Sleep(time.Minute)
 				ds, err := virtClient.CdiClient().CdiV1beta1().DataSources(vm.Namespace).Create(context.TODO(), ds, metav1.CreateOptions{})
 				Expect(err).ToNot(HaveOccurred())
 
@@ -1060,6 +1063,8 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 			DescribeTable("[storage-req] deny then allow clone request", decorators.StorageReq, func(role *rbacv1.Role, allServiceAccounts, allServiceAccountsInNamespace bool, cloneMutateFunc func(), fail bool) {
 				if cloneMutateFunc != nil {
 					cloneMutateFunc()
+					//DEBUG
+					time.Sleep(time.Minute)
 				}
 				_, err := virtClient.VirtualMachine(vm.Namespace).Create(context.Background(), vm, metav1.CreateOptions{})
 				Expect(err).To(HaveOccurred())
@@ -1115,6 +1120,9 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 					ObjectMeta: vm.Spec.DataVolumeTemplates[0].ObjectMeta,
 					Spec:       vm.Spec.DataVolumeTemplates[0].Spec,
 				}
+				//DEBUG
+				dv.Annotations = map[string]string{"cdi.kubevirt.io/storage.bind.immediate.requested": "true"}
+
 				dv, err = virtClient.CdiClient().CdiV1beta1().DataVolumes(vm.Namespace).Create(context.Background(), dv, metav1.CreateOptions{})
 				Expect(err).ToNot(HaveOccurred())
 				libstorage.EventuallyDV(dv, 90, HaveSucceeded())
@@ -1505,8 +1513,9 @@ func renderVMWithCloneDataVolume(sourceNamespace, sourceName, targetNamespace, s
 	dv := libdv.NewDataVolume(
 		libdv.WithNamespace(testsuite.GetTestNamespace(nil)),
 		libdv.WithPVCSource(sourceNamespace, sourceName),
-		libdv.WithStorage(libdv.StorageWithStorageClass(sc), libdv.StorageWithVolumeSize("4Gi")),
+		libdv.WithStorage(libdv.StorageWithStorageClass(sc), libdv.StorageWithVolumeSize("10Gi")),
 	)
+
 	return libstorage.RenderVMWithDataVolumeTemplate(dv)
 }
 

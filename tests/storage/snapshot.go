@@ -408,7 +408,7 @@ var _ = SIGDescribe("VirtualMachineSnapshot Tests", func() {
 			}
 
 			It("[test_id:6767]with volumes and guest agent available", func() {
-				quantity, err := resource.ParseQuantity("1Gi")
+				quantity, err := resource.ParseQuantity("4Gi")
 				Expect(err).ToNot(HaveOccurred())
 				vmi := libvmifact.NewFedora(libnet.WithMasqueradeNetworking())
 				vmi.Namespace = testsuite.GetTestNamespace(nil)
@@ -477,7 +477,7 @@ var _ = SIGDescribe("VirtualMachineSnapshot Tests", func() {
 			})
 
 			It("[test_id:6768]with volumes and no guest agent available", func() {
-				quantity, err := resource.ParseQuantity("1Gi")
+				quantity, err := resource.ParseQuantity("4Gi")
 				Expect(err).ToNot(HaveOccurred())
 				vmi := libvmifact.NewAlpine(libnet.WithMasqueradeNetworking())
 				vmi.Namespace = testsuite.GetTestNamespace(nil)

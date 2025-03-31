@@ -118,7 +118,7 @@ func cirrosMemory() string {
 	if isARM64() {
 		return "256Mi"
 	}
-	return "128Mi"
+	return "4Gi" //"128Mi"
 }
 
 func NewWindows(opts ...libvmi.Option) *kvirtv1.VirtualMachineInstance {
