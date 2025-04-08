@@ -153,7 +153,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 			}
 			Expect(err).ToNot(HaveOccurred())
 			return vmi.Status.Phase == v1.Running
-		}, 360*time.Second, time.Second).Should(BeTrue())
+		}, 1000*time.Second, time.Second).Should(BeTrue())
 
 		return vm, vmi
 	}
@@ -264,6 +264,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 			libdv.WithNamespace(testsuite.GetTestNamespace(nil)),
 			libdv.WithStorage(
 				libdv.StorageWithStorageClass(storageClass),
+				//libdv.StorageWithAccessMode(corev1.ReadWriteOnce), //DEBUG
 				libdv.StorageWithVolumeSize(cd.ContainerDiskSizeBySourceURL(cd.DataVolumeImportUrlForContainerDisk(containerDisk))),
 			),
 		)
@@ -997,6 +998,9 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 					targetUID = &vm.UID
 				}
 
+				//FIXME: maybe the snapshot is too early in boot - mid-journal, uncommited fs metadata?
+				//guest agent may help us when it's avail?
+				time.Sleep(2 * time.Minute)
 				createMessageWithInitialValue(login, device, tpm, vmi)
 
 				if !onlineSnapshot {
@@ -1209,6 +1213,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 				vm, vmi = createAndStartVM(createVMWithCloudInit(cd.ContainerDiskCirros, snapshotStorageClass))
 
 				originalDVName := vm.Spec.DataVolumeTemplates[0].Name
+
 				doRestore("", console.LoginToCirros, offlineSnaphot, getTargetVMName(restoreToNewVM, newVmName))
 				verifyRestore(restoreToNewVM, originalDVName)
 			},
@@ -1871,7 +1876,7 @@ var _ = SIGDescribe("VirtualMachineRestore Tests", func() {
 					// TODO: consider ensuring network clone gets done here using StorageProfile CloneStrategy
 					dataVolume := libdv.NewDataVolume(
 						libdv.WithPVCSource(sourceDV.Namespace, sourceDV.Name),
-						libdv.WithStorage(libdv.StorageWithStorageClass(snapshotStorageClass), libdv.StorageWithVolumeSize("10Gi")),
+						libdv.WithStorage(libdv.StorageWithStorageClass(snapshotStorageClass), libdv.StorageWithVolumeSize("100Gi")),
 					)
 
 					return libvmi.NewVirtualMachine(

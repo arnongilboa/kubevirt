@@ -1,10 +1,10 @@
 {
-    "storageClassRhel":        "sp-balanced-storage",
-    "storageClassWindows":     "sp-balanced-storage",
-    "storageRWXFileSystem":    "",
-    "storageRWXBlock":         "sp-balanced-storage",
-    "storageRWOFileSystem":    "sp-balanced-storage-rwo-file",
-    "storageRWOBlock":         "sp-balanced-storage-rwo",
-    "storageSnapshot":         "sp-balanced-storage-rwo"
+    "storageClassRhel":        "standard",
+    "storageClassWindows":     "standard",
+    "storageRWXFileSystem":    "standard",
+    "storageRWXBlock":         "",
+    "storageRWOFileSystem":    "standard-rwo",
+    "storageRWOBlock":         "",
+    "storageSnapshot":         "standard"
 }
 

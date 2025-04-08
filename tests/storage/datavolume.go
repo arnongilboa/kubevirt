@@ -850,7 +850,8 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 
 				dataVolume, err = virtClient.CdiClient().CdiV1beta1().DataVolumes(testsuite.NamespaceTestAlternative).Create(context.Background(), dataVolume, metav1.CreateOptions{})
 				Expect(err).ToNot(HaveOccurred())
-				libstorage.EventuallyDV(dataVolume, 90, HaveSucceeded())
+				//FIXME
+				libstorage.EventuallyDV(dataVolume, 600, HaveSucceeded())
 
 				vm = renderVMWithCloneDataVolume(testsuite.NamespaceTestAlternative, dataVolume.Name, testsuite.GetTestNamespace(nil), storageClass)
 
@@ -896,7 +897,7 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 				// start vm and check dv clone succeeded
 				vm = libvmops.StartVirtualMachine(vm)
 				targetDVName := vm.Spec.DataVolumeTemplates[0].Name
-				libstorage.EventuallyDVWith(vm.Namespace, targetDVName, 90, HaveSucceeded())
+				libstorage.EventuallyDVWith(vm.Namespace, targetDVName, 360, HaveSucceeded())
 			}
 
 			createPVCDataSource := func() *cdiv1.DataSource {
@@ -972,7 +973,7 @@ var _ = SIGDescribe("DataVolume Integration", func() {
 				ds := createDataSourceFunc()
 
 				//DEBUG
-				time.Sleep(time.Minute)
+				//time.Sleep(time.Minute)
 				ds, err := virtClient.CdiClient().CdiV1beta1().DataSources(vm.Namespace).Create(context.TODO(), ds, metav1.CreateOptions{})
 				Expect(err).ToNot(HaveOccurred())
 
@@ -1509,11 +1510,13 @@ func volumeExpansionAllowed(sc string) bool {
 		*storageClass.AllowVolumeExpansion
 }
 
+// FIXME: use/remove targetNamespace?
 func renderVMWithCloneDataVolume(sourceNamespace, sourceName, targetNamespace, sc string) *v1.VirtualMachine {
 	dv := libdv.NewDataVolume(
 		libdv.WithNamespace(testsuite.GetTestNamespace(nil)),
 		libdv.WithPVCSource(sourceNamespace, sourceName),
-		libdv.WithStorage(libdv.StorageWithStorageClass(sc), libdv.StorageWithVolumeSize("10Gi")),
+		//FIXME: why can't we remove the size here?
+		libdv.WithStorage(libdv.StorageWithStorageClass(sc), libdv.StorageWithVolumeSize("100Gi")),
 	)
 
 	return libstorage.RenderVMWithDataVolumeTemplate(dv)

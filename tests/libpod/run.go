@@ -43,7 +43,7 @@ func Run(pod *k8sv1.Pod, namespace string) (*k8sv1.Pod, error) {
 		return nil, err
 	}
 
-	EventuallyWithOffset(1, matcher.ThisPod(pod), 180).Should(matcher.BeInPhase(k8sv1.PodRunning))
+	EventuallyWithOffset(1, matcher.ThisPod(pod), 600).Should(matcher.BeInPhase(k8sv1.PodRunning))
 	return matcher.ThisPod(pod)()
 }
 

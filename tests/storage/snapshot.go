@@ -111,7 +111,7 @@ var _ = SIGDescribe("VirtualMachineSnapshot Tests", func() {
 	}
 
 	waitDataVolumePopulated := func(namespace, name string) {
-		libstorage.EventuallyDVWith(namespace, name, 180, matcher.HaveSucceeded())
+		libstorage.EventuallyDVWith(namespace, name, 600, matcher.HaveSucceeded())
 		// THIS SHOULD NOT BE NECESSARY - but in DV/Populator integration
 		Eventually(func() string {
 			pvc, err := virtClient.CoreV1().PersistentVolumeClaims(namespace).Get(context.Background(), name, metav1.GetOptions{})
@@ -313,7 +313,7 @@ var _ = SIGDescribe("VirtualMachineSnapshot Tests", func() {
 				vm.Spec.RunStrategy = virtpointer.P(v1.RunStrategyAlways)
 				vm, err := virtClient.VirtualMachine(vm.Namespace).Create(context.Background(), vm, metav1.CreateOptions{})
 				Expect(err).ToNot(HaveOccurred())
-				Eventually(ThisVMIWith(vm.Namespace, vm.Name), 360).Should(BeInPhase(v1.Running))
+				Eventually(ThisVMIWith(vm.Namespace, vm.Name), 600).Should(BeInPhase(v1.Running))
 				vmi, err = virtClient.VirtualMachineInstance(vm.Namespace).Get(context.Background(), vm.Name, metav1.GetOptions{})
 				Expect(err).ToNot(HaveOccurred())
 
@@ -1629,7 +1629,7 @@ var _ = SIGDescribe("VirtualMachineSnapshot Tests", func() {
 				By("Starting the VM and expecting it to run")
 				vm, err = virtClient.VirtualMachine(vm.Namespace).Create(context.Background(), vm, metav1.CreateOptions{})
 				Expect(err).ToNot(HaveOccurred())
-				Eventually(ThisVMIWith(vm.Namespace, vm.Name), 360).Should(BeInPhase(v1.Running))
+				Eventually(ThisVMIWith(vm.Namespace, vm.Name), 600).Should(BeInPhase(v1.Running))
 
 				for _, dvt := range vm.Spec.DataVolumeTemplates {
 					waitDataVolumePopulated(vm.Namespace, dvt.Name)

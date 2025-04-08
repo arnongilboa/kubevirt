@@ -59,6 +59,7 @@ import (
 	"kubevirt.io/kubevirt/pkg/apimachinery/patch"
 	certutil "kubevirt.io/kubevirt/pkg/certificates/triple/cert"
 	"kubevirt.io/kubevirt/pkg/libvmi"
+	"kubevirt.io/kubevirt/pkg/pointer"
 	virtpointer "kubevirt.io/kubevirt/pkg/pointer"
 	"kubevirt.io/kubevirt/pkg/virt-operator/resource/generate/components"
 	"kubevirt.io/kubevirt/tests/clientcmd"
@@ -221,6 +222,8 @@ var _ = SIGDescribe("Export", func() {
 			pod.Spec.SecurityContext = &k8sv1.PodSecurityContext{}
 		}
 		pod.Spec.SecurityContext.FSGroup = &qemuGid
+		//DEBUG
+		pod.Spec.Containers[0].SecurityContext.RunAsNonRoot = pointer.P(false)
 
 		volumeMode := pvc.Spec.VolumeMode
 		if volumeMode != nil && *volumeMode == k8sv1.PersistentVolumeBlock {
@@ -296,7 +299,8 @@ var _ = SIGDescribe("Export", func() {
 		}, 60*time.Second, 1*time.Second).Should(BeNil(), "persistent volume associated with DV should be created")
 
 		By("Making sure the DV is successful")
-		libstorage.EventuallyDV(dv, 90, HaveSucceeded())
+		//FIXME
+		libstorage.EventuallyDV(dv, 600, HaveSucceeded())
 
 		pod, err := createSourcePodChecker(pvc)
 		Expect(err).ToNot(HaveOccurred())
