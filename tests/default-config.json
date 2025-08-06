@@ -1,6 +1,6 @@
 {
-    "storageClassRhel":        "rhel",
-    "storageClassWindows":     "windows",
-    "storageRWOFileSystem":    "local"
+    "storageRWXFileSystem":    "gcnv-flex",
+    "storageRWOFileSystem":    "gcnv-flex",
+    "storageSnapshot":         "gcnv-flex"
 }
 

@@ -334,11 +334,12 @@ var _ = Describe(SIG("Memory dump", func() {
 			}
 		})
 
+		//F
 		It("[test_id:8499]Should be able to get and remove memory dump calling endpoint directly", func() {
 			previousOutput := createMemoryDumpAndVerify(vm, memoryDumpPVCName, noPreviousOutput, memoryDumpVMSubresource)
 			removeMemoryDumpAndVerify(vm, memoryDumpPVCName, previousOutput, removeMemoryDumpVMSubresource)
 		})
-
+		//F
 		It("[test_id:8502]Run multiple memory dumps", decorators.StorageCritical, func() {
 			previousOutput := ""
 			for i := 0; i < 3; i++ {
@@ -356,7 +357,7 @@ var _ = Describe(SIG("Memory dump", func() {
 
 			removeMemoryDumpAndVerify(vm, memoryDumpPVCName, previousOutput, removeMemoryDumpVMSubresource)
 		})
-
+		//F
 		It("[test_id:8503]Run memory dump to a pvc, remove and run memory dump to different pvc", func() {
 			By("Running memory dump to pvc: " + memoryDumpPVCName)
 			previousOutput := createMemoryDumpAndVerify(vm, memoryDumpPVCName, noPreviousOutput, memoryDumpVMSubresource)
@@ -371,7 +372,7 @@ var _ = Describe(SIG("Memory dump", func() {
 			By("Running remove memory dump to second pvc: " + memoryDumpPVCName2)
 			removeMemoryDumpAndVerify(vm, memoryDumpPVCName2, previousOutput, removeMemoryDumpVMSubresource)
 		})
-
+		//F
 		It("[test_id:8506]Run memory dump, stop vm and remove memory dump", func() {
 			By("Running memory dump")
 			memoryDumpVMSubresource(vm.Name, vm.Namespace, memoryDumpPVCName)

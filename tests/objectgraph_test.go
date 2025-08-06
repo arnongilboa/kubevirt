@@ -27,7 +27,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	v1 "kubevirt.io/api/core/v1"
@@ -37,6 +36,7 @@ import (
 	"kubevirt.io/kubevirt/tests/decorators"
 	"kubevirt.io/kubevirt/tests/framework/kubevirt"
 	"kubevirt.io/kubevirt/tests/libsecret"
+	"kubevirt.io/kubevirt/tests/libstorage"
 	"kubevirt.io/kubevirt/tests/testsuite"
 )
 
@@ -49,6 +49,7 @@ var _ = Describe("[sig-storage]ObjectGraph", decorators.SigStorage, func() {
 		virtClient = kubevirt.Client()
 	})
 
+	//F
 	Context("with VM", func() {
 		var (
 			vm     *v1.VirtualMachine
@@ -58,22 +59,11 @@ var _ = Describe("[sig-storage]ObjectGraph", decorators.SigStorage, func() {
 
 		BeforeEach(func() {
 			By("Creating a PVC")
-			pvc = &corev1.PersistentVolumeClaim{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test-pvc-",
-					Namespace:    testsuite.GetTestNamespace(nil),
-				},
-				Spec: corev1.PersistentVolumeClaimSpec{
-					AccessModes: []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce},
-					Resources: corev1.VolumeResourceRequirements{
-						Requests: corev1.ResourceList{
-							corev1.ResourceStorage: resource.MustParse("1Gi"),
-						},
-					},
-				},
-			}
-			var err error
-			pvc, err = virtClient.CoreV1().PersistentVolumeClaims(testsuite.GetTestNamespace(nil)).Create(context.Background(), pvc, metav1.CreateOptions{})
+			storageClass, exists := libstorage.GetRWOFileSystemStorageClass()
+			Expect(exists).To(BeTrue())
+			pvc = libstorage.NewPVC("", "1Gi", storageClass)
+			pvc.GenerateName = "test-pvc-"
+			pvc, err := virtClient.CoreV1().PersistentVolumeClaims(testsuite.GetTestNamespace(nil)).Create(context.Background(), pvc, metav1.CreateOptions{})
 			Expect(err).ToNot(HaveOccurred())
 
 			By("Creating a Secret")

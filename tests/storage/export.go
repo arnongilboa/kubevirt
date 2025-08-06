@@ -37,6 +37,7 @@ import (
 	routev1 "github.com/openshift/api/route/v1"
 	"sigs.k8s.io/yaml"
 
+	corev1 "k8s.io/api/core/v1"
 	k8sv1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/api/equality"
@@ -167,6 +168,7 @@ var _ = Describe(SIG("Export", func() {
 			pod.Spec.SecurityContext = &k8sv1.PodSecurityContext{}
 		}
 		pod.Spec.SecurityContext.FSGroup = &qemuGid
+		//pod.Spec.Containers[0].SecurityContext.RunAsNonRoot = pointer.P(false) // nil //debug
 		pod.Spec.Volumes = append(pod.Spec.Volumes, k8sv1.Volume{
 			Name: "cacerts",
 			VolumeSource: k8sv1.VolumeSource{
@@ -180,7 +182,7 @@ var _ = Describe(SIG("Export", func() {
 		addCertVolume(pod)
 		return pod
 	}
-
+	///xxx
 	createDownloadPodForPvc := func(pvc *k8sv1.PersistentVolumeClaim, caConfigMap *k8sv1.ConfigMap) (*k8sv1.Pod, error) {
 		volumeName := pvc.GetName()
 		pod := createDownloadPod(caConfigMap)
@@ -537,11 +539,17 @@ var _ = Describe(SIG("Export", func() {
 				Name:      fmt.Sprintf("target-pvc-%s", rand.String(12)),
 				Namespace: pvc.Namespace,
 			},
+			//Spec: *pvc.Spec.DeepCopy(),
 			Spec: k8sv1.PersistentVolumeClaimSpec{
 				AccessModes:      pvc.Spec.AccessModes,
 				StorageClassName: pvc.Spec.StorageClassName,
-				Resources:        pvc.Spec.Resources,
-				VolumeMode:       pvc.Spec.VolumeMode,
+				//pvc.Spec.Resources,
+				Resources: corev1.VolumeResourceRequirements{
+					Requests: corev1.ResourceList{
+						corev1.ResourceStorage: resource.MustParse("2Gi"),
+					},
+				},
+				VolumeMode: pvc.Spec.VolumeMode,
 			},
 		}
 		By("Creating target PVC, so we can inspect if the export worked")
@@ -578,6 +586,8 @@ var _ = Describe(SIG("Export", func() {
 		verifyFunction(fileName, comparison, downloadPod, volumeMode)
 	},
 		// "internal" tests
+		//Error: container has runAsNonRoot and image will run as root
+		//F
 		Entry("with RAW kubevirt content type", populateKubeVirtContent, verifyKubeVirtRawContent, libstorage.GetRWOFileSystemStorageClass, createCaConfigMapInternal, urlGeneratorInternal, exportv1.KubeVirtRaw, kubevirtcontentUrlTemplate, k8sv1.PersistentVolumeFilesystem),
 		Entry("with RAW gzipped kubevirt content type", populateKubeVirtContent, verifyKubeVirtGzContent, libstorage.GetRWOFileSystemStorageClass, createCaConfigMapInternal, urlGeneratorInternal, exportv1.KubeVirtGz, kubevirtcontentUrlTemplate, k8sv1.PersistentVolumeFilesystem),
 		Entry("with archive content type", populateArchiveContent, verifyKubeVirtRawContent, libstorage.GetRWOFileSystemStorageClass, createCaConfigMapInternal, urlGeneratorInternal, exportv1.Dir, archiveDircontentUrlTemplate, k8sv1.PersistentVolumeFilesystem),
@@ -655,6 +665,7 @@ var _ = Describe(SIG("Export", func() {
 
 		// Create a target PVC for downloading the exported volume
 		By("Creating a target PVC")
+		//FIXME ??
 		targetPvc := &k8sv1.PersistentVolumeClaim{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      fmt.Sprintf("target-pvc-%s", rand.String(12)),

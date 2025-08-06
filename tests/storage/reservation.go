@@ -231,7 +231,8 @@ var _ = Describe(SIG("SCSI persistent reservation", Serial, func() {
 			Expect(virtClient.CoreV1().PersistentVolumes().Delete(context.Background(), pv.Name, metav1.DeleteOptions{})).NotTo(HaveOccurred())
 
 		})
-
+		//F
+		//  [FAILED] command='targetcli [backstores/fileio create disk8s4qdxnf /disks/disk.img 800M]' stdout='' stderr='executable file `/usr/bin/targetcli` not found: No such file or directory
 		It("Should successfully start a VM with persistent reservation", func() {
 			By("Create VMI with the SCSI disk")
 			vmi := libvmifact.NewFedora(
@@ -288,6 +289,7 @@ var _ = Describe(SIG("SCSI persistent reservation", Serial, func() {
 			).To(BeTrue())
 		})
 
+		//F
 		It("Should successfully start 2 VMs with persistent reservation on the same LUN", func() {
 			By("Create 2 VMs with the SCSI disk")
 			vmi := libvmifact.NewFedora(

@@ -158,27 +158,12 @@ var _ = Describe("[sig-compute]Migration recovery", decorators.SigCompute, decor
 func createPVCFor(virtClient kubecli.KubevirtClient, vm *v1.VirtualMachine) *k8score.PersistentVolumeClaim {
 	storageClass, exists := libstorage.GetRWOFileSystemStorageClass()
 	Expect(exists).To(BeTrue())
-	mode := k8score.PersistentVolumeFilesystem
-	accessMode := k8score.ReadWriteOnce
-	ownerReferences := []k8smeta.OwnerReference{
+	pvc := libstorage.NewPVC("", backendstorage.PVCSize, storageClass)
+	pvc.GenerateName = backendstorage.PVCPrefix + "-" + vm.Name + "-"
+	pvc.OwnerReferences = []k8smeta.OwnerReference{
 		*k8smeta.NewControllerRef(vm, v1.VirtualMachineGroupVersionKind),
 	}
-	pvc := &k8score.PersistentVolumeClaim{
-		ObjectMeta: k8smeta.ObjectMeta{
-			GenerateName:    backendstorage.PVCPrefix + "-" + vm.Name + "-",
-			OwnerReferences: ownerReferences,
-			Labels:          map[string]string{backendstorage.PVCPrefix: vm.Name},
-		},
-		Spec: k8score.PersistentVolumeClaimSpec{
-			AccessModes: []k8score.PersistentVolumeAccessMode{accessMode},
-			Resources: k8score.VolumeResourceRequirements{
-				Requests: k8score.ResourceList{k8score.ResourceStorage: resource.MustParse(backendstorage.PVCSize)},
-			},
-			StorageClassName: &storageClass,
-			VolumeMode:       &mode,
-		},
-	}
-
+	pvc.Labels[backendstorage.PVCPrefix] = vm.Name
 	pvc, err := virtClient.CoreV1().PersistentVolumeClaims(vm.Namespace).Create(context.Background(), pvc, k8smeta.CreateOptions{})
 	Expect(err).NotTo(HaveOccurred())
 

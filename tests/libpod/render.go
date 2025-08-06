@@ -92,6 +92,7 @@ func renderContainerSpec(imgPath, name string, cmd, args []string) v1.Container 
 			Privileged:               pointer.P(false),
 			AllowPrivilegeEscalation: pointer.P(false),
 			RunAsNonRoot:             pointer.P(true),
+			RunAsUser:                pointer.P(int64(107)), //?
 			SeccompProfile: &v1.SeccompProfile{
 				Type: v1.SeccompProfileTypeRuntimeDefault,
 			},

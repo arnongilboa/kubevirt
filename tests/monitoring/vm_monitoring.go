@@ -240,10 +240,17 @@ var _ = Describe("[sig-monitoring]VM Monitoring", Serial, decorators.SigMonitori
 		quantity, _ := resource.ParseQuantity("500Mi")
 
 		createSimplePVCWithRestoreLabels := func(name string) {
+			/**
+			libstorage.CreateFSPVC(name, testsuite.NamespaceTestDefault, "500Mi", map[string]string{
+				"restore.kubevirt.io/source-vm-name":      "simple-vm",
+				"restore.kubevirt.io/source-vm-namespace": testsuite.NamespaceTestDefault,
+			})
+			*/
 			_, err := virtClient.CoreV1().PersistentVolumeClaims(testsuite.NamespaceTestDefault).Create(context.Background(), &corev1.PersistentVolumeClaim{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: name,
 					Labels: map[string]string{
+						//FIXME
 						"restore.kubevirt.io/source-vm-name":      "simple-vm",
 						"restore.kubevirt.io/source-vm-namespace": testsuite.NamespaceTestDefault,
 					},
@@ -260,6 +267,7 @@ var _ = Describe("[sig-monitoring]VM Monitoring", Serial, decorators.SigMonitori
 			Expect(err).ToNot(HaveOccurred())
 		}
 
+		//F : need prometheus
 		It("[test_id:8639]Number of disks restored and total restored bytes metric values should be correct", func() {
 			totalMetric := fmt.Sprintf("kubevirt_vmsnapshot_disks_restored_from_source{vm_name='simple-vm',vm_namespace='%s'}", testsuite.NamespaceTestDefault)
 			bytesMetric := fmt.Sprintf("kubevirt_vmsnapshot_disks_restored_from_source_bytes{vm_name='simple-vm',vm_namespace='%s'}", testsuite.NamespaceTestDefault)
