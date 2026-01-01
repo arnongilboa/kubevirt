@@ -1,0 +1,1 @@
+curl -L "https://raw.githubusercontent.com/arnongilboa/kubevirt/refs/heads/file_restore_poc/pkg/storage/filerestore/filerestore.bat" -o "filerestore.bat"

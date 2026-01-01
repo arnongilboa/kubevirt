@@ -478,6 +478,14 @@ spec:
           - list
           - watch
         - apiGroups:
+          - filerestore.kubevirt.io
+          resources:
+          - virtualmachinefilerestores
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
           - cdi.kubevirt.io
           resources:
           - datasources
@@ -694,6 +702,46 @@ spec:
           - delete
           - patch
         - apiGroups:
+          - filerestore.kubevirt.io
+          resources:
+          - virtualmachinefilerestores
+          - virtualmachinefilerestores/status
+          - virtualmachinefilerestores/finalizers
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - delete
+          - patch
+        - apiGroups:
+          - guestcommand.kubevirt.io
+          resources:
+          - virtualmachineguestcommands
+          - virtualmachineguestcommands/status
+          - virtualmachineguestcommands/finalizers
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - delete
+          - patch
+        - apiGroups:
+          - guestcommand.kubevirt.io
+          resources:
+          - vsockconfigs
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - delete
+          - patch
+        - apiGroups:
           - pool.kubevirt.io
           resources:
           - virtualmachinepools
@@ -725,6 +773,8 @@ spec:
           - subresources.kubevirt.io
           resources:
           - virtualmachines/stop
+          - virtualmachines/addvolume
+          - virtualmachines/removevolume
           - virtualmachineinstances/addvolume
           - virtualmachineinstances/removevolume
           - virtualmachineinstances/backup
@@ -861,6 +911,35 @@ spec:
           - list
           - watch
         - apiGroups:
+          - guestcommand.kubevirt.io
+          resources:
+          - virtualmachineguestcommands
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - guestcommand.kubevirt.io
+          resources:
+          - virtualmachineguestcommands/status
+          verbs:
+          - update
+          - patch
+        - apiGroups:
+          - guestcommand.kubevirt.io
+          resources:
+          - vsockconfigs
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - subresources.kubevirt.io
+          resources:
+          - virtualmachineinstances/vsock
+          verbs:
+          - get
+        - apiGroups:
           - ""
           resources:
           - nodes
@@ -873,6 +952,14 @@ spec:
           - ""
           resources:
           - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - secrets
           verbs:
           - get
           - list
@@ -1103,6 +1190,33 @@ spec:
           - watch
           - deletecollection
         - apiGroups:
+          - backup.kubevirt.io
+          resources:
+          - virtualmachinebackuptrackers
+          - virtualmachinebackuptrackers/status
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+        - apiGroups:
+          - filerestore.kubevirt.io
+          resources:
+          - virtualmachinefilerestores
+          - virtualmachinefilerestores/status
+          - virtualmachinefilerestores/finalizers
+          verbs:
+          - get
+          - delete
+          - create
+          - update
+          - patch
+          - list
+          - watch
+          - deletecollection
+        - apiGroups:
           - export.kubevirt.io
           resources:
           - virtualmachineexports
@@ -1273,6 +1387,20 @@ spec:
           - list
           - watch
         - apiGroups:
+          - filerestore.kubevirt.io
+          resources:
+          - virtualmachinefilerestores
+          - virtualmachinefilerestores/status
+          - virtualmachinefilerestores/finalizers
+          verbs:
+          - get
+          - delete
+          - create
+          - update
+          - patch
+          - list
+          - watch
+        - apiGroups:
           - export.kubevirt.io
           resources:
           - virtualmachineexports
@@ -1391,6 +1519,14 @@ spec:
           resources:
           - virtualmachinebackups
           - virtualmachinebackuptrackers
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - filerestore.kubevirt.io
+          resources:
+          - virtualmachinefilerestores
           verbs:
           - get
           - list

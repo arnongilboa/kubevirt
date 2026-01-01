@@ -41,6 +41,8 @@ import (
 	virtv1 "kubevirt.io/api/core/v1"
 	exportv1 "kubevirt.io/api/export/v1"
 	exportv1beta1 "kubevirt.io/api/export/v1beta1"
+	filerestorev1alpha1 "kubevirt.io/api/filerestore/v1alpha1"
+	"kubevirt.io/api/guestcommand"
 	instancetypev1beta1 "kubevirt.io/api/instancetype/v1beta1"
 	poolv1alpha1 "kubevirt.io/api/pool/v1alpha1"
 	poolv1beta1 "kubevirt.io/api/pool/v1beta1"
@@ -71,6 +73,9 @@ var (
 	VIRTUALMACHINECLONE              = "virtualmachineclones." + clone.GroupName
 	VIRTUALMACHINEBACKUP             = "virtualmachinebackups." + backupv1alpha1.SchemeGroupVersion.Group
 	VIRTUALMACHINEBACKUPTRACKER      = "virtualmachinebackuptrackers." + backupv1alpha1.SchemeGroupVersion.Group
+	VIRTUALMACHINEGUESTCOMMAND       = "virtualmachineguestcommands." + guestcommand.GroupName
+	VSOCKCONFIG                      = "vsockconfigs." + guestcommand.GroupName
+	VIRTUALMACHINEFILERESTORE        = "virtualmachinefilerestores." + filerestorev1alpha1.SchemeGroupVersion.Group
 )
 
 func addFieldsToVersion(version *extv1.CustomResourceDefinitionVersion, fields ...interface{}) error {
@@ -953,6 +958,134 @@ func NewVirtualMachineCloneCrd() (*extv1.CustomResourceDefinition, error) {
 			{Name: "TargetVirtualMachine", Type: "string", JSONPath: ".spec.target.name"},
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = patchValidationForAllVersions(crd); err != nil {
+		return nil, err
+	}
+	return crd, nil
+}
+
+func NewVirtualMachineGuestCommandCrd() (*extv1.CustomResourceDefinition, error) {
+	crd := newBlankCrd()
+
+	crd.ObjectMeta.Name = VIRTUALMACHINEGUESTCOMMAND
+	crd.Spec = extv1.CustomResourceDefinitionSpec{
+		Group: guestcommand.GroupName,
+		Versions: []extv1.CustomResourceDefinitionVersion{
+			{
+				Name:    "v1alpha1",
+				Served:  true,
+				Storage: true,
+			},
+		},
+		Scope: "Namespaced",
+
+		Names: extv1.CustomResourceDefinitionNames{
+			Plural:     "virtualmachineguestcommands",
+			Singular:   "virtualmachineguestcommand",
+			Kind:       "VirtualMachineGuestCommand",
+			ShortNames: []string{"vmgc"},
+			Categories: []string{
+				"all",
+			},
+		},
+	}
+	err := addFieldsToAllVersions(crd, []extv1.CustomResourceColumnDefinition{
+		{Name: "VMI", Type: "string", JSONPath: ".spec.vmiName", Description: "Name of the VirtualMachineInstance"},
+		{Name: "Phase", Type: "string", JSONPath: ".status.phase", Description: "Phase of the command execution"},
+		{Name: "ExitCode", Type: "integer", JSONPath: ".status.exitCode", Description: "Exit code of the command"},
+		{Name: "Age", Type: "date", JSONPath: creationTimestampJSONPath},
+	}, &extv1.CustomResourceSubresources{
+		Status: &extv1.CustomResourceSubresourceStatus{}})
+	if err != nil {
+		return nil, err
+	}
+
+	if err = patchValidationForAllVersions(crd); err != nil {
+		return nil, err
+	}
+	return crd, nil
+}
+
+func NewVSOCKConfigCrd() (*extv1.CustomResourceDefinition, error) {
+	crd := newBlankCrd()
+
+	crd.ObjectMeta.Name = VSOCKCONFIG
+	crd.Spec = extv1.CustomResourceDefinitionSpec{
+		Group: guestcommand.GroupName,
+		Versions: []extv1.CustomResourceDefinitionVersion{
+			{
+				Name:    "v1alpha1",
+				Served:  true,
+				Storage: true,
+			},
+		},
+		Scope: "Namespaced",
+
+		Names: extv1.CustomResourceDefinitionNames{
+			Plural:     "vsockconfigs",
+			Singular:   "vsockconfig",
+			Kind:       "VSOCKConfig",
+			ShortNames: []string{"vsc"},
+			Categories: []string{
+				"all",
+			},
+		},
+	}
+	err := addFieldsToAllVersions(crd, []extv1.CustomResourceColumnDefinition{
+		{Name: "Port", Type: "integer", JSONPath: ".spec.port", Description: "VSOCK port number"},
+		{Name: "User", Type: "string", JSONPath: ".spec.user", Description: "SSH user"},
+		{Name: "Age", Type: "date", JSONPath: creationTimestampJSONPath},
+	}, &extv1.CustomResourceSubresources{
+		Status: &extv1.CustomResourceSubresourceStatus{}})
+	if err != nil {
+		return nil, err
+	}
+
+	if err = patchValidationForAllVersions(crd); err != nil {
+		return nil, err
+	}
+	return crd, nil
+}
+
+func NewVirtualMachineFileRestoreCrd() (*extv1.CustomResourceDefinition, error) {
+	crd := newBlankCrd()
+
+	crd.ObjectMeta.Name = VIRTUALMACHINEFILERESTORE
+	crd.Spec = extv1.CustomResourceDefinitionSpec{
+		Group: filerestorev1alpha1.SchemeGroupVersion.Group,
+		Versions: []extv1.CustomResourceDefinitionVersion{
+			{
+				Name:    filerestorev1alpha1.SchemeGroupVersion.Version,
+				Served:  true,
+				Storage: true,
+				Subresources: &extv1.CustomResourceSubresources{
+					Status: &extv1.CustomResourceSubresourceStatus{},
+				},
+			},
+		},
+		Scope: "Namespaced",
+		Conversion: &extv1.CustomResourceConversion{
+			Strategy: extv1.NoneConverter,
+		},
+		Names: extv1.CustomResourceDefinitionNames{
+			Plural:     "virtualmachinefilerestores",
+			Singular:   "virtualmachinefilerestore",
+			Kind:       "VirtualMachineFileRestore",
+			ShortNames: []string{"vmfr", "vmfilerestore", "vmfilerestores"},
+			Categories: []string{
+				"all",
+			},
+		},
+	}
+	err := addFieldsToAllVersions(crd, []extv1.CustomResourceColumnDefinition{
+		{Name: "VMI", Type: "string", JSONPath: ".spec.vmiName"},
+		{Name: "Phase", Type: "string", JSONPath: phaseJSONPath},
+		{Name: "Age", Type: "date", JSONPath: creationTimestampJSONPath},
+	})
 	if err != nil {
 		return nil, err
 	}

@@ -71,6 +71,7 @@ import (
 
 	backupv1 "kubevirt.io/api/backup/v1alpha1"
 	exportv1 "kubevirt.io/api/export/v1"
+	filerestorev1alpha1 "kubevirt.io/api/filerestore/v1alpha1"
 	poolv1 "kubevirt.io/api/pool/v1beta1"
 	snapshotv1 "kubevirt.io/api/snapshot/v1beta1"
 	"kubevirt.io/client-go/kubecli"
@@ -88,6 +89,7 @@ import (
 	"kubevirt.io/kubevirt/pkg/service"
 	backup "kubevirt.io/kubevirt/pkg/storage/cbt"
 	"kubevirt.io/kubevirt/pkg/storage/export/export"
+	filerestore "kubevirt.io/kubevirt/pkg/storage/filerestore"
 	"kubevirt.io/kubevirt/pkg/storage/snapshot"
 	"kubevirt.io/kubevirt/pkg/util"
 	virtconfig "kubevirt.io/kubevirt/pkg/virt-config"
@@ -200,6 +202,7 @@ type VirtControllerApp struct {
 	exportController             *export.VMExportController
 	snapshotController           *snapshot.VMSnapshotController
 	restoreController            *snapshot.VMRestoreController
+	fileRestoreController        *filerestore.VMFileRestoreController
 	vmExportInformer             cache.SharedIndexInformer
 	routeCache                   cache.Store
 	ingressCache                 cache.Store
@@ -207,6 +210,8 @@ type VirtControllerApp struct {
 	vmSnapshotInformer           cache.SharedIndexInformer
 	vmSnapshotContentInformer    cache.SharedIndexInformer
 	vmRestoreInformer            cache.SharedIndexInformer
+	vmFileRestoreInformer        cache.SharedIndexInformer
+	vmGuestCommandInformer       cache.SharedIndexInformer
 	storageClassInformer         cache.SharedIndexInformer
 	allPodInformer               cache.SharedIndexInformer
 	resourceQuotaInformer        cache.SharedIndexInformer
@@ -291,6 +296,7 @@ func init() {
 	utilruntime.Must(poolv1.AddToScheme(scheme.Scheme))
 	utilruntime.Must(clone.AddToScheme(scheme.Scheme))
 	utilruntime.Must(backupv1.AddToScheme(scheme.Scheme))
+	utilruntime.Must(filerestorev1alpha1.AddToScheme(scheme.Scheme))
 }
 
 func Execute() {
@@ -401,6 +407,8 @@ func Execute() {
 	app.vmSnapshotInformer = app.informerFactory.VirtualMachineSnapshot()
 	app.vmSnapshotContentInformer = app.informerFactory.VirtualMachineSnapshotContent()
 	app.vmRestoreInformer = app.informerFactory.VirtualMachineRestore()
+	app.vmFileRestoreInformer = app.informerFactory.VirtualMachineFileRestore()
+	app.vmGuestCommandInformer = app.informerFactory.VirtualMachineGuestCommand()
 	app.storageClassInformer = app.informerFactory.StorageClass()
 	app.caExportConfigMapInformer = app.informerFactory.KubeVirtExportCAConfigMap()
 	app.caBackupConfigMapInformer = app.informerFactory.KubeVirtBackupCAConfigMap()
@@ -485,6 +493,7 @@ func Execute() {
 	app.initEvacuationController()
 	app.initSnapshotController()
 	app.initRestoreController()
+	app.initFileRestoreController()
 	app.initExportController()
 	app.initWorkloadUpdaterController()
 	app.initCloneController()
@@ -618,6 +627,11 @@ func (vca *VirtControllerApp) onStartedLeading() func(ctx context.Context) {
 		go func() {
 			if err := vca.restoreController.Run(vca.restoreControllerThreads, stop); err != nil {
 				log.Log.Warningf("error running the restore controller: %v", err)
+			}
+		}()
+		go func() {
+			if err := vca.fileRestoreController.Run(defaultControllerThreads, stop); err != nil {
+				log.Log.Warningf("error running the file restore controller: %v", err)
 			}
 		}()
 		go func() {
@@ -907,6 +921,22 @@ func (vca *VirtControllerApp) initRestoreController() {
 		CRInformer:                vca.controllerRevisionInformer,
 	}
 	if err := vca.restoreController.Init(); err != nil {
+		panic(err)
+	}
+}
+
+func (vca *VirtControllerApp) initFileRestoreController() {
+	recorder := vca.newRecorder(k8sv1.NamespaceAll, "filerestore-controller")
+	vca.fileRestoreController = &filerestore.VMFileRestoreController{
+		Client:                 vca.clientSet,
+		VMFileRestoreInformer:  vca.vmFileRestoreInformer,
+		VMInformer:             vca.vmInformer,
+		VMIInformer:            vca.vmiInformer,
+		VMGuestCommandInformer: vca.vmGuestCommandInformer,
+		DataVolumeInformer:     vca.dataVolumeInformer,
+		Recorder:               recorder,
+	}
+	if err := vca.fileRestoreController.Init(); err != nil {
 		panic(err)
 	}
 }

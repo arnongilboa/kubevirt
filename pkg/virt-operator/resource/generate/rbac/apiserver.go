@@ -231,6 +231,17 @@ func newApiServerClusterRole() *rbacv1.ClusterRole {
 			},
 			{
 				APIGroups: []string{
+					"filerestore.kubevirt.io",
+				},
+				Resources: []string{
+					"virtualmachinefilerestores",
+				},
+				Verbs: []string{
+					"get", "list", "watch",
+				},
+			},
+			{
+				APIGroups: []string{
 					"cdi.kubevirt.io",
 				},
 				Resources: []string{

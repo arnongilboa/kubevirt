@@ -11015,6 +11015,252 @@ var CRDsValidation map[string]string = map[string]string{
   - spec
   type: object
 `,
+	"virtualmachinefilerestore": `openAPIV3Schema:
+  description: VirtualMachineFileRestore defines the operation of restoring files
+    to a VM
+  properties:
+    apiVersion:
+      description: |-
+        APIVersion defines the versioned schema of this representation of an object.
+        Servers should convert recognized schemas to the latest internal value, and
+        may reject unrecognized values.
+        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+      type: string
+    kind:
+      description: |-
+        Kind is a string value representing the REST resource this object represents.
+        Servers may infer this from the endpoint the client submits requests to.
+        Cannot be updated.
+        In CamelCase.
+        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+      type: string
+    metadata:
+      type: object
+    spec:
+      description: VirtualMachineFileRestoreSpec is the spec for a VirtualMachineFileRestore
+        resource
+      properties:
+        source:
+          description: |-
+            Source specifies where to restore files from
+            Exactly one of PVC, Snapshot, or Host must be specified
+          properties:
+            host:
+              description: Host specifies an SSH-able host as the source
+              properties:
+                host:
+                  description: Host specifies the SSH host address (hostname or IP)
+                  type: string
+              required:
+              - host
+              type: object
+            pvc:
+              description: PVC specifies a PersistentVolumeClaim in the same namespace
+                as the source
+              properties:
+                name:
+                  description: Name of the PersistentVolumeClaim in the same namespace
+                  type: string
+              required:
+              - name
+              type: object
+            snapshot:
+              description: Snapshot specifies a VolumeSnapshot in the same namespace
+                as the source
+              properties:
+                name:
+                  description: Name of the VolumeSnapshot in the same namespace
+                  type: string
+              required:
+              - name
+              type: object
+          type: object
+        sourcePath:
+          description: |-
+            SourcePath specifies the path on the source to restore from
+            If empty, the restore volume will be mounted at /backup for manual operation,
+            and will remain mounted until the VirtualMachineFileRestore is deleted.
+          type: string
+        targetPath:
+          description: |-
+            TargetPath specifies the path on the target VMI to restore to
+            If not specified, defaults to the same path as SourcePath
+          type: string
+        vmiName:
+          description: |-
+            VMIName specifies the target VirtualMachineInstance name
+            The VMI must be running for the restore operation to proceed
+          type: string
+      required:
+      - source
+      - vmiName
+      type: object
+    status:
+      description: VirtualMachineFileRestoreStatus is the status for a VirtualMachineFileRestore
+        resource
+      properties:
+        mountPath:
+          description: |-
+            MountPath is the path where the restore volume is mounted inside the VM guest
+            This is populated when the volume is ready and is useful for manual restore operations
+          type: string
+        phase:
+          description: Phase represents the current phase of the file restore operation
+          enum:
+          - Pending
+          - InProgress
+          - VolumeReady
+          - Succeeded
+          - Failed
+          type: string
+      type: object
+  required:
+  - spec
+  type: object
+`,
+	"virtualmachineguestcommand": `openAPIV3Schema:
+  description: VirtualMachineGuestCommand defines a command to be executed in a VM
+    guest via SSH over VSOCK
+  properties:
+    apiVersion:
+      description: |-
+        APIVersion defines the versioned schema of this representation of an object.
+        Servers should convert recognized schemas to the latest internal value, and
+        may reject unrecognized values.
+        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+      type: string
+    kind:
+      description: |-
+        Kind is a string value representing the REST resource this object represents.
+        Servers may infer this from the endpoint the client submits requests to.
+        Cannot be updated.
+        In CamelCase.
+        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+      type: string
+    metadata:
+      type: object
+    spec:
+      description: Spec defines the desired state of the guest command
+      properties:
+        command:
+          description: |-
+            Command is the command to execute. The first element is the command path,
+            and the remaining elements are arguments.
+          items:
+            type: string
+          minItems: 1
+          type: array
+          x-kubernetes-list-type: atomic
+        runPolicy:
+          default: Once
+          description: RunPolicy specifies when the command should be executed
+          enum:
+          - Once
+          - OnChange
+          type: string
+        timeout:
+          default: 30
+          description: |-
+            Timeout specifies the timeout in seconds for command execution.
+            Defaults to 30 seconds if not specified.
+          format: int32
+          maximum: 300
+          minimum: 1
+          type: integer
+        transport:
+          description: |-
+            Transport specifies the transport configuration for communicating with the guest.
+            References a VSOCKConfig resource by name.
+          properties:
+            vsock:
+              description: VSOCK specifies a reference to a VSOCKConfig resource for
+                SSH over VSOCK transport.
+              properties:
+                name:
+                  description: Name is the name of the VSOCKConfig resource in the
+                    same namespace.
+                  type: string
+              required:
+              - name
+              type: object
+          type: object
+        vmiName:
+          description: VMIName specifies the target VirtualMachineInstance name
+          type: string
+      required:
+      - command
+      - vmiName
+      type: object
+    status:
+      description: Status defines the observed state of the guest command
+      properties:
+        conditions:
+          description: Conditions represent the latest available observations of the
+            command's state
+          items:
+            description: VirtualMachineGuestCommandCondition represents a condition
+              of the guest command
+            properties:
+              lastProbeTime:
+                format: date-time
+                type: string
+              lastTransitionTime:
+                format: date-time
+                type: string
+              message:
+                type: string
+              reason:
+                type: string
+              status:
+                type: string
+              type:
+                description: VirtualMachineGuestCommandConditionType represents the
+                  type of condition
+                type: string
+            required:
+            - status
+            - type
+            type: object
+          type: array
+          x-kubernetes-list-type: atomic
+        exitCode:
+          description: ExitCode is the exit code returned by the command
+          format: int32
+          type: integer
+        lastExecutionTime:
+          description: LastExecutionTime is the timestamp of the last execution attempt
+          format: date-time
+          type: string
+        message:
+          description: Message provides additional information about the execution
+          type: string
+        observedGeneration:
+          description: ObservedGeneration reflects the generation of the most recently
+            observed spec
+          format: int64
+          type: integer
+        phase:
+          description: Phase represents the current phase of command execution
+          enum:
+          - Pending
+          - Running
+          - Succeeded
+          - Failed
+          type: string
+        reason:
+          description: Reason provides a brief CamelCase reason for the phase
+          type: string
+        stderr:
+          description: Stderr contains the standard error output from the command
+          type: string
+        stdout:
+          description: Stdout contains the standard output from the command
+          type: string
+      type: object
+  required:
+  - spec
+  type: object
+`,
 	"virtualmachineinstance": `openAPIV3Schema:
   description: VirtualMachineInstance is *the* VirtualMachineInstance Definition.
     It represents a virtual machine in the runtime environment of kubernetes.
@@ -32764,6 +33010,82 @@ var CRDsValidation map[string]string = map[string]string{
             type: object
           type: array
           x-kubernetes-list-type: atomic
+      type: object
+  required:
+  - spec
+  type: object
+`,
+	"vsockconfig": `openAPIV3Schema:
+  description: VSOCKConfig defines VSOCK connection configuration for guest commands
+  properties:
+    apiVersion:
+      description: |-
+        APIVersion defines the versioned schema of this representation of an object.
+        Servers should convert recognized schemas to the latest internal value, and
+        may reject unrecognized values.
+        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+      type: string
+    kind:
+      description: |-
+        Kind is a string value representing the REST resource this object represents.
+        Servers may infer this from the endpoint the client submits requests to.
+        Cannot be updated.
+        In CamelCase.
+        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+      type: string
+    metadata:
+      type: object
+    spec:
+      description: Spec defines the VSOCK configuration
+      properties:
+        port:
+          default: 22
+          description: |-
+            Port specifies the VSOCK port to connect to in the guest.
+            Defaults to 22 (standard SSH port) if not specified.
+          format: int32
+          maximum: 65535
+          minimum: 1
+          type: integer
+        sshKeySecret:
+          description: |-
+            SSHKeySecret is a reference to a secret containing the SSH private key.
+            The SecretKeySelector's Key field specifies which key in the secret contains the private key
+            (commonly "ssh-privatekey").
+            If not specified, the controller will attempt to use default SSH keys from the node.
+          properties:
+            key:
+              description: The key of the secret to select from.  Must be a valid
+                secret key.
+              type: string
+            name:
+              default: ""
+              description: |-
+                Name of the referent.
+                This field is effectively required, but due to backwards compatibility is
+                allowed to be empty. Instances of this type with an empty value here are
+                almost certainly wrong.
+                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+              type: string
+            optional:
+              description: Specify whether the Secret or its key must be defined
+              type: boolean
+          required:
+          - key
+          type: object
+          x-kubernetes-map-type: atomic
+        useTLS:
+          default: false
+          description: |-
+            UseTLS specifies whether to use TLS for the VSOCK connection.
+            Defaults to false if not specified.
+          type: boolean
+        user:
+          default: root
+          description: |-
+            User specifies the SSH user to authenticate as.
+            Defaults to "root" if not specified.
+          type: string
       type: object
   required:
   - spec

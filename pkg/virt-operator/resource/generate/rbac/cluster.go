@@ -26,6 +26,7 @@ import (
 	"kubevirt.io/api/backup"
 	"kubevirt.io/api/clone"
 	"kubevirt.io/api/export"
+	"kubevirt.io/api/filerestore"
 	"kubevirt.io/api/pool"
 	"kubevirt.io/api/snapshot"
 
@@ -64,6 +65,7 @@ const (
 	apiVMExports          = "virtualmachineexports"
 	apiVMClones           = "virtualmachineclones"
 	apiVMPools            = "virtualmachinepools"
+	apiVMFileRestores     = "virtualmachinefilerestores"
 
 	apiVMExpandSpec     = "virtualmachines/expand-spec"
 	apiVMPortForward    = "virtualmachines/portforward"
@@ -337,6 +339,31 @@ func newAdminClusterRole() *rbacv1.ClusterRole {
 			},
 			{
 				APIGroups: []string{
+					backup.GroupName,
+				},
+				Resources: []string{
+					apiVMBackupTrackers,
+					apiVMBackupTrackers + "/status",
+				},
+				Verbs: []string{
+					"get", "list", "watch", "create", "update", "patch",
+				},
+			},
+			{
+				APIGroups: []string{
+					filerestore.GroupName,
+				},
+				Resources: []string{
+					apiVMFileRestores,
+					apiVMFileRestores + "/status",
+					apiVMFileRestores + "/finalizers",
+				},
+				Verbs: []string{
+					"get", "delete", "create", "update", "patch", "list", "watch", "deletecollection",
+				},
+			},
+			{
+				APIGroups: []string{
 					export.GroupName,
 				},
 				Resources: []string{
@@ -545,6 +572,19 @@ func newEditClusterRole() *rbacv1.ClusterRole {
 			},
 			{
 				APIGroups: []string{
+					filerestore.GroupName,
+				},
+				Resources: []string{
+					apiVMFileRestores,
+					apiVMFileRestores + "/status",
+					apiVMFileRestores + "/finalizers",
+				},
+				Verbs: []string{
+					"get", "delete", "create", "update", "patch", "list", "watch",
+				},
+			},
+			{
+				APIGroups: []string{
 					export.GroupName,
 				},
 				Resources: []string{
@@ -744,6 +784,17 @@ func newViewClusterRole() *rbacv1.ClusterRole {
 				Resources: []string{
 					apiVMBackups,
 					apiVMBackupTrackers,
+				},
+				Verbs: []string{
+					"get", "list", "watch",
+				},
+			},
+			{
+				APIGroups: []string{
+					filerestore.GroupName,
+				},
+				Resources: []string{
+					apiVMFileRestores,
 				},
 				Verbs: []string{
 					"get", "list", "watch",

@@ -24,11 +24,17 @@ import (
 // (3) Rest of the kubevirt mocking is automatically generated in generated_mock_kubevirt.go
 
 // MockKubevirtClientInstance is a reference to the kubevirt client that could be manipulated by the test code
-var MockKubevirtClientInstance *MockKubevirtClient
+// NOTE: This variable and function will work after mockgen regenerates the mock file
+var MockKubevirtClientInstance KubevirtClient
 
 // GetMockKubevirtClientFromClientConfig is an entry point for testing, could be used to override GetKubevirtClientFromClientConfig
 func GetMockKubevirtClientFromClientConfig(cmdConfig clientcmd.ClientConfig) (KubevirtClient, error) {
 	return MockKubevirtClientInstance, nil
+}
+
+// SetMockKubevirtClientInstance sets the mock client instance (use with NewMockKubevirtClient from generated mocks)
+func SetMockKubevirtClientInstance(client KubevirtClient) {
+	MockKubevirtClientInstance = client
 }
 
 // GetInvalidKubevirtClientFromClientConfig is an entry point for testing case where client should be invalid

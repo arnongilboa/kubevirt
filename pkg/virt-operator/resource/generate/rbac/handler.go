@@ -26,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	virtv1 "kubevirt.io/api/core/v1"
+	"kubevirt.io/api/guestcommand"
 	"kubevirt.io/api/migrations"
 
 	"kubevirt.io/kubevirt/pkg/virt-operator/resource/generate/components"
@@ -83,6 +84,50 @@ func newHandlerClusterRole() *rbacv1.ClusterRole {
 			},
 			{
 				APIGroups: []string{
+					guestcommand.GroupName,
+				},
+				Resources: []string{
+					"virtualmachineguestcommands",
+				},
+				Verbs: []string{
+					"get", "list", "watch",
+				},
+			},
+			{
+				APIGroups: []string{
+					guestcommand.GroupName,
+				},
+				Resources: []string{
+					"virtualmachineguestcommands/status",
+				},
+				Verbs: []string{
+					"update", "patch",
+				},
+			},
+			{
+				APIGroups: []string{
+					guestcommand.GroupName,
+				},
+				Resources: []string{
+					"vsockconfigs",
+				},
+				Verbs: []string{
+					"get", "list", "watch",
+				},
+			},
+			{
+				APIGroups: []string{
+					"subresources.kubevirt.io",
+				},
+				Resources: []string{
+					"virtualmachineinstances/vsock",
+				},
+				Verbs: []string{
+					"get",
+				},
+			},
+			{
+				APIGroups: []string{
 					"",
 				},
 				Resources: []string{
@@ -101,6 +146,19 @@ func newHandlerClusterRole() *rbacv1.ClusterRole {
 				},
 				Resources: []string{
 					"configmaps",
+				},
+				Verbs: []string{
+					"get",
+					"list",
+					"watch",
+				},
+			},
+			{
+				APIGroups: []string{
+					"",
+				},
+				Resources: []string{
+					"secrets",
 				},
 				Verbs: []string{
 					"get",

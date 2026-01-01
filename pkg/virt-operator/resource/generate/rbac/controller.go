@@ -26,6 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"kubevirt.io/api/clone"
+	"kubevirt.io/api/guestcommand"
 
 	"kubevirt.io/kubevirt/pkg/virt-operator/resource/generate/components"
 
@@ -368,6 +369,43 @@ func baseControllerClusterRole() *rbacv1.ClusterRole {
 			},
 			{
 				APIGroups: []string{
+					"filerestore.kubevirt.io",
+				},
+				Resources: []string{
+					"virtualmachinefilerestores",
+					"virtualmachinefilerestores/status",
+					"virtualmachinefilerestores/finalizers",
+				},
+				Verbs: []string{
+					"get", "list", "watch", "create", "update", "delete", "patch",
+				},
+			},
+			{
+				APIGroups: []string{
+					guestcommand.GroupName,
+				},
+				Resources: []string{
+					"virtualmachineguestcommands",
+					"virtualmachineguestcommands/status",
+					"virtualmachineguestcommands/finalizers",
+				},
+				Verbs: []string{
+					"get", "list", "watch", "create", "update", "delete", "patch",
+				},
+			},
+			{
+				APIGroups: []string{
+					guestcommand.GroupName,
+				},
+				Resources: []string{
+					"vsockconfigs",
+				},
+				Verbs: []string{
+					"get", "list", "watch", "create", "update", "delete", "patch",
+				},
+			},
+			{
+				APIGroups: []string{
 					"pool.kubevirt.io",
 				},
 				Resources: []string{
@@ -417,6 +455,8 @@ func baseControllerClusterRole() *rbacv1.ClusterRole {
 				},
 				Resources: []string{
 					"virtualmachines/stop",
+					"virtualmachines/addvolume",
+					"virtualmachines/removevolume",
 					"virtualmachineinstances/addvolume",
 					"virtualmachineinstances/removevolume",
 					"virtualmachineinstances/backup",

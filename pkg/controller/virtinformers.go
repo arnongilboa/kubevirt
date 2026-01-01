@@ -58,6 +58,8 @@ import (
 	kubev1 "kubevirt.io/api/core/v1"
 	v1 "kubevirt.io/api/core/v1"
 	exportv1 "kubevirt.io/api/export/v1"
+	filerestorev1alpha1 "kubevirt.io/api/filerestore/v1alpha1"
+	guestcommandv1alpha1 "kubevirt.io/api/guestcommand/v1alpha1"
 	instancetypeapi "kubevirt.io/api/instancetype"
 	instancetypev1beta1 "kubevirt.io/api/instancetype/v1beta1"
 	"kubevirt.io/api/migrations"
@@ -154,6 +156,12 @@ type KubeInformerFactory interface {
 
 	// Watches VirtualMachineClone objects
 	VirtualMachineClone() cache.SharedIndexInformer
+
+	// Watches VirtualMachineGuestCommand objects
+	VirtualMachineGuestCommand() cache.SharedIndexInformer
+
+	// Watches VirtualMachineFileRestore objects
+	VirtualMachineFileRestore() cache.SharedIndexInformer
 
 	// Watches VirtualMachineInstancetype objects
 	VirtualMachineInstancetype() cache.SharedIndexInformer
@@ -939,6 +947,38 @@ func (f *kubeInformerFactory) VirtualMachineClone() cache.SharedIndexInformer {
 	return f.getInformer("virtualMachineCloneInformer", func() cache.SharedIndexInformer {
 		lw := cache.NewListWatchFromClient(f.clientSet.GeneratedKubeVirtClient().CloneV1beta1().RESTClient(), clonebase.ResourceVMClonePlural, k8sv1.NamespaceAll, fields.Everything())
 		return cache.NewSharedIndexInformer(lw, &clone.VirtualMachineClone{}, f.defaultResync, GetVirtualMachineCloneInformerIndexers())
+	})
+}
+
+func (f *kubeInformerFactory) VirtualMachineGuestCommand() cache.SharedIndexInformer {
+	return f.getInformer("virtualMachineGuestCommandInformer", func() cache.SharedIndexInformer {
+		lw := cache.NewListWatchFromClient(f.clientSet.GeneratedKubeVirtClient().GuestcommandV1alpha1().RESTClient(), "virtualmachineguestcommands", k8sv1.NamespaceAll, fields.Everything())
+		return cache.NewSharedIndexInformer(lw, &guestcommandv1alpha1.VirtualMachineGuestCommand{}, f.defaultResync, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc})
+	})
+}
+
+func GetVirtualMachineFileRestoreInformerIndexers() cache.Indexers {
+	return cache.Indexers{
+		cache.NamespaceIndex: cache.MetaNamespaceIndexFunc,
+		"vmi": func(obj interface{}) ([]string, error) {
+			vmfr, ok := obj.(*filerestorev1alpha1.VirtualMachineFileRestore)
+			if !ok {
+				return nil, unexpectedObjectError
+			}
+
+			if vmfr.Spec.VMIName != "" {
+				return []string{fmt.Sprintf("%s/%s", vmfr.Namespace, vmfr.Spec.VMIName)}, nil
+			}
+
+			return nil, nil
+		},
+	}
+}
+
+func (f *kubeInformerFactory) VirtualMachineFileRestore() cache.SharedIndexInformer {
+	return f.getInformer("virtualMachineFileRestoreInformer", func() cache.SharedIndexInformer {
+		lw := cache.NewListWatchFromClient(f.clientSet.GeneratedKubeVirtClient().FilerestoreV1alpha1().RESTClient(), "virtualmachinefilerestores", k8sv1.NamespaceAll, fields.Everything())
+		return cache.NewSharedIndexInformer(lw, &filerestorev1alpha1.VirtualMachineFileRestore{}, f.defaultResync, GetVirtualMachineFileRestoreInformerIndexers())
 	})
 }
 

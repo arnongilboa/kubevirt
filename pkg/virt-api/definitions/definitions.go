@@ -42,6 +42,7 @@ import (
 	backupv1 "kubevirt.io/api/backup/v1alpha1"
 	v1 "kubevirt.io/api/core/v1"
 	exportv1 "kubevirt.io/api/export/v1"
+	filerestorev1alpha1 "kubevirt.io/api/filerestore/v1alpha1"
 	instancetypev1beta1 "kubevirt.io/api/instancetype/v1beta1"
 	poolv1beta1 "kubevirt.io/api/pool/v1beta1"
 	snapshotv1 "kubevirt.io/api/snapshot/v1beta1"
@@ -62,6 +63,7 @@ func ComposeAPIDefinitions() []*restful.WebService {
 		snapshotApiServiceDefinitions,
 		exportApiServiceDefinitions,
 		backupApiServiceDefinitions,
+		filerestoreApiServiceDefinitions,
 		instancetypeApiServiceDefinitions,
 		migrationPoliciesApiServiceDefinitions,
 		poolApiServiceDefinitions,
@@ -149,6 +151,26 @@ func snapshotApiServiceDefinitions() []*restful.WebService {
 	}
 
 	ws2, err := resourceProxyAutodiscovery(vmsGVR)
+	if err != nil {
+		panic(err)
+	}
+	return []*restful.WebService{ws, ws2}
+}
+
+func filerestoreApiServiceDefinitions() []*restful.WebService {
+	vmfrGVR := filerestorev1alpha1.SchemeGroupVersion.WithResource("virtualmachinefilerestores")
+
+	ws, err := groupVersionProxyBase(schema.GroupVersion{Group: filerestorev1alpha1.SchemeGroupVersion.Group, Version: filerestorev1alpha1.SchemeGroupVersion.Version})
+	if err != nil {
+		panic(err)
+	}
+
+	ws, err = genericNamespacedResourceProxy(ws, vmfrGVR, &filerestorev1alpha1.VirtualMachineFileRestore{}, "VirtualMachineFileRestore", &filerestorev1alpha1.VirtualMachineFileRestoreList{})
+	if err != nil {
+		panic(err)
+	}
+
+	ws2, err := resourceProxyAutodiscovery(vmfrGVR)
 	if err != nil {
 		panic(err)
 	}

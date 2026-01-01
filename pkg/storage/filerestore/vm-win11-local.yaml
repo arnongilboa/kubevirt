@@ -1,0 +1,34 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: win11
+spec:
+  instancetype:
+    #name: u1.large
+    name: u1.2xmedium
+  preference:
+    name: windows.11.virtio
+    kind: VirtualMachineClusterPreference
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        network.kubevirt.io/headlessService: headless
+    spec:
+      domain:
+        devices:
+          autoattachVSOCK: true
+          autoattachPodInterface: false
+          disks:
+            - name: rootdisk
+          interfaces:
+            - masquerade: {}
+              name: default
+      networks:
+        - name: default
+          pod: {}
+      subdomain: headless
+      volumes:
+        - persistentVolumeClaim:
+            claimName: win11-boot-pvc-1
+          name: rootdisk

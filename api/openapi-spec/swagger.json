@@ -1529,6 +1529,531 @@
      }
     ]
    },
+   "/apis/filerestore.kubevirt.io/": {
+    "get": {
+     "description": "Get a KubeVirt API group",
+     "produces": [
+      "application/json"
+     ],
+     "operationId": "getAPIGroup-filerestore.kubevirt.io",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.APIGroup"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      },
+      "404": {
+       "description": "Not Found",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   },
+   "/apis/filerestore.kubevirt.io/v1alpha1/": {
+    "get": {
+     "description": "Get KubeVirt API Resources",
+     "produces": [
+      "application/json"
+     ],
+     "operationId": "getAPIResources-filerestore.kubevirt.io-v1alpha1",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.APIResourceList"
+       }
+      },
+      "401": {
+       "description": "Unauthorized"
+      },
+      "404": {
+       "description": "Not Found",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   },
+   "/apis/filerestore.kubevirt.io/v1alpha1/namespaces/{namespace}/virtualmachinefilerestores": {
+    "get": {
+     "description": "Get a list of VirtualMachineFileRestore objects.",
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/json;stream=watch"
+     ],
+     "operationId": "listNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "$ref": "#/parameters/continue-tuthsW5V"
+      },
+      {
+       "$ref": "#/parameters/fieldSelector-xIcQKXFG"
+      },
+      {
+       "$ref": "#/parameters/includeUninitialized-QoLHGc5Z"
+      },
+      {
+       "$ref": "#/parameters/labelSelector-QAC9DRn4"
+      },
+      {
+       "$ref": "#/parameters/limit-1NfNmdNH"
+      },
+      {
+       "$ref": "#/parameters/namespace-nfszEHZ0"
+      },
+      {
+       "$ref": "#/parameters/resourceVersion-NVjERKp4"
+      },
+      {
+       "$ref": "#/parameters/timeoutSeconds-Uh2az5SS"
+      },
+      {
+       "$ref": "#/parameters/watch-XNNPZGbK"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestoreList"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "post": {
+     "description": "Create a VirtualMachineFileRestore object.",
+     "consumes": [
+      "application/json",
+      "application/yaml"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml"
+     ],
+     "operationId": "createNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      {
+       "$ref": "#/parameters/namespace-nfszEHZ0"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "201": {
+       "description": "Created",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "202": {
+       "description": "Accepted",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "delete": {
+     "description": "Delete a collection of VirtualMachineFileRestore objects.",
+     "produces": [
+      "application/json",
+      "application/yaml"
+     ],
+     "operationId": "deleteCollectionNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "$ref": "#/parameters/continue-tuthsW5V"
+      },
+      {
+       "$ref": "#/parameters/fieldSelector-xIcQKXFG"
+      },
+      {
+       "$ref": "#/parameters/includeUninitialized-QoLHGc5Z"
+      },
+      {
+       "$ref": "#/parameters/labelSelector-QAC9DRn4"
+      },
+      {
+       "$ref": "#/parameters/limit-1NfNmdNH"
+      },
+      {
+       "$ref": "#/parameters/resourceVersion-NVjERKp4"
+      },
+      {
+       "$ref": "#/parameters/timeoutSeconds-Uh2az5SS"
+      },
+      {
+       "$ref": "#/parameters/watch-XNNPZGbK"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    }
+   },
+   "/apis/filerestore.kubevirt.io/v1alpha1/namespaces/{namespace}/virtualmachinefilerestores/{name}": {
+    "get": {
+     "description": "Get a VirtualMachineFileRestore object.",
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/json;stream=watch"
+     ],
+     "operationId": "readNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "$ref": "#/parameters/exact-uArBoZ4_"
+      },
+      {
+       "$ref": "#/parameters/export-Jg3Blz7K"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "put": {
+     "description": "Update a VirtualMachineFileRestore object.",
+     "consumes": [
+      "application/json",
+      "application/yaml"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml"
+     ],
+     "operationId": "replaceNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "201": {
+       "description": "Create",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "delete": {
+     "description": "Delete a VirtualMachineFileRestore object.",
+     "consumes": [
+      "application/json",
+      "application/yaml"
+     ],
+     "produces": [
+      "application/json",
+      "application/yaml"
+     ],
+     "operationId": "deleteNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.DeleteOptions"
+       }
+      },
+      {
+       "$ref": "#/parameters/gracePeriodSeconds--K5HaBOS"
+      },
+      {
+       "$ref": "#/parameters/orphanDependents-uRB25kX5"
+      },
+      {
+       "$ref": "#/parameters/propagationPolicy-6jk3prlO"
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.Status"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "patch": {
+     "description": "Patch a VirtualMachineFileRestore object.",
+     "consumes": [
+      "application/json-patch+json",
+      "application/merge-patch+json"
+     ],
+     "produces": [
+      "application/json"
+     ],
+     "operationId": "patchNamespacedVirtualMachineFileRestore",
+     "parameters": [
+      {
+       "name": "body",
+       "in": "body",
+       "required": true,
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.Patch"
+       }
+      }
+     ],
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "uniqueItems": true,
+      "type": "string",
+      "description": "Name of the resource",
+      "name": "name",
+      "in": "path",
+      "required": true
+     },
+     {
+      "$ref": "#/parameters/namespace-nfszEHZ0"
+     }
+    ]
+   },
+   "/apis/filerestore.kubevirt.io/v1alpha1/virtualmachinefilerestores": {
+    "get": {
+     "description": "Get a list of all VirtualMachineFileRestore objects.",
+     "produces": [
+      "application/json",
+      "application/yaml",
+      "application/json;stream=watch"
+     ],
+     "operationId": "listVirtualMachineFileRestoreForAllNamespaces",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestoreList"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "$ref": "#/parameters/continue-tuthsW5V"
+     },
+     {
+      "$ref": "#/parameters/fieldSelector-xIcQKXFG"
+     },
+     {
+      "$ref": "#/parameters/includeUninitialized-QoLHGc5Z"
+     },
+     {
+      "$ref": "#/parameters/labelSelector-QAC9DRn4"
+     },
+     {
+      "$ref": "#/parameters/limit-1NfNmdNH"
+     },
+     {
+      "$ref": "#/parameters/resourceVersion-NVjERKp4"
+     },
+     {
+      "$ref": "#/parameters/timeoutSeconds-Uh2az5SS"
+     },
+     {
+      "$ref": "#/parameters/watch-XNNPZGbK"
+     }
+    ]
+   },
+   "/apis/filerestore.kubevirt.io/v1alpha1/watch/namespaces/{namespace}/virtualmachinefilerestores": {
+    "get": {
+     "description": "Watch a VirtualMachineFileRestore object.",
+     "produces": [
+      "application/json"
+     ],
+     "operationId": "watchNamespacedVirtualMachineFileRestore",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.WatchEvent"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "$ref": "#/parameters/continue-tuthsW5V"
+     },
+     {
+      "$ref": "#/parameters/fieldSelector-xIcQKXFG"
+     },
+     {
+      "$ref": "#/parameters/includeUninitialized-QoLHGc5Z"
+     },
+     {
+      "$ref": "#/parameters/labelSelector-QAC9DRn4"
+     },
+     {
+      "$ref": "#/parameters/limit-1NfNmdNH"
+     },
+     {
+      "$ref": "#/parameters/namespace-nfszEHZ0"
+     },
+     {
+      "$ref": "#/parameters/resourceVersion-NVjERKp4"
+     },
+     {
+      "$ref": "#/parameters/timeoutSeconds-Uh2az5SS"
+     },
+     {
+      "$ref": "#/parameters/watch-XNNPZGbK"
+     }
+    ]
+   },
+   "/apis/filerestore.kubevirt.io/v1alpha1/watch/virtualmachinefilerestores": {
+    "get": {
+     "description": "Watch a VirtualMachineFileRestoreList object.",
+     "produces": [
+      "application/json"
+     ],
+     "operationId": "watchVirtualMachineFileRestoreListForAllNamespaces",
+     "responses": {
+      "200": {
+       "description": "OK",
+       "schema": {
+        "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.WatchEvent"
+       }
+      },
+      "401": {
+       "description": "Unauthorized",
+       "schema": {
+        "type": "string"
+       }
+      }
+     }
+    },
+    "parameters": [
+     {
+      "$ref": "#/parameters/continue-tuthsW5V"
+     },
+     {
+      "$ref": "#/parameters/fieldSelector-xIcQKXFG"
+     },
+     {
+      "$ref": "#/parameters/includeUninitialized-QoLHGc5Z"
+     },
+     {
+      "$ref": "#/parameters/labelSelector-QAC9DRn4"
+     },
+     {
+      "$ref": "#/parameters/limit-1NfNmdNH"
+     },
+     {
+      "$ref": "#/parameters/resourceVersion-NVjERKp4"
+     },
+     {
+      "$ref": "#/parameters/timeoutSeconds-Uh2az5SS"
+     },
+     {
+      "$ref": "#/parameters/watch-XNNPZGbK"
+     }
+    ]
+   },
    "/apis/instancetype.kubevirt.io/": {
     "get": {
      "description": "Get a KubeVirt API group",
@@ -20466,6 +20991,102 @@
      }
     }
    },
+   "v1alpha1.Condition": {
+    "description": "Condition defines conditions",
+    "type": "object",
+    "required": [
+     "type",
+     "status"
+    ],
+    "properties": {
+     "lastProbeTime": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "lastTransitionTime": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "message": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string"
+     },
+     "status": {
+      "type": "string",
+      "default": ""
+     },
+     "type": {
+      "type": "string",
+      "default": ""
+     }
+    }
+   },
+   "v1alpha1.FileRestoreSource": {
+    "description": "FileRestoreSource represents the source for file restore operations Exactly one of PVC, Snapshot, or Host must be specified",
+    "type": "object",
+    "properties": {
+     "host": {
+      "description": "Host specifies an SSH-able host as the source",
+      "$ref": "#/definitions/v1alpha1.FileRestoreSourceHost"
+     },
+     "pvc": {
+      "description": "PVC specifies a PersistentVolumeClaim in the same namespace as the source",
+      "$ref": "#/definitions/v1alpha1.FileRestoreSourcePVC"
+     },
+     "snapshot": {
+      "description": "Snapshot specifies a VolumeSnapshot in the same namespace as the source",
+      "$ref": "#/definitions/v1alpha1.FileRestoreSourceSnapshot"
+     }
+    }
+   },
+   "v1alpha1.FileRestoreSourceHost": {
+    "description": "FileRestoreSourceHost provides the parameters to restore from an SSH-able host",
+    "type": "object",
+    "required": [
+     "host"
+    ],
+    "properties": {
+     "host": {
+      "description": "Host specifies the SSH host address (hostname or IP)",
+      "type": "string",
+      "default": ""
+     }
+    }
+   },
+   "v1alpha1.FileRestoreSourcePVC": {
+    "description": "FileRestoreSourcePVC provides the parameters to restore from a PVC",
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "properties": {
+     "name": {
+      "description": "Name of the PersistentVolumeClaim in the same namespace",
+      "type": "string",
+      "default": ""
+     }
+    }
+   },
+   "v1alpha1.FileRestoreSourceSnapshot": {
+    "description": "FileRestoreSourceSnapshot provides the parameters to restore from a VolumeSnapshot",
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "properties": {
+     "name": {
+      "description": "Name of the VolumeSnapshot in the same namespace",
+      "type": "string",
+      "default": ""
+     }
+    }
+   },
    "v1alpha1.MigrationPolicy": {
     "description": "MigrationPolicy holds migration policy (i.e. configurations) to apply to a VM or group of VMs",
     "type": "object",
@@ -20705,6 +21326,106 @@
      },
      "type": {
       "description": "Type indicates if the backup was full or incremental",
+      "type": "string"
+     }
+    }
+   },
+   "v1alpha1.VirtualMachineFileRestore": {
+    "description": "VirtualMachineFileRestore defines the operation of restoring files to a VM",
+    "type": "object",
+    "required": [
+     "spec"
+    ],
+    "properties": {
+     "apiVersion": {
+      "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+      "type": "string"
+     },
+     "kind": {
+      "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+      "type": "string"
+     },
+     "metadata": {
+      "default": {},
+      "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta"
+     },
+     "spec": {
+      "default": {},
+      "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestoreSpec"
+     },
+     "status": {
+      "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestoreStatus"
+     }
+    }
+   },
+   "v1alpha1.VirtualMachineFileRestoreList": {
+    "description": "VirtualMachineFileRestoreList is a list of VirtualMachineFileRestore resources",
+    "type": "object",
+    "required": [
+     "metadata",
+     "items"
+    ],
+    "properties": {
+     "apiVersion": {
+      "description": "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+      "type": "string"
+     },
+     "items": {
+      "type": "array",
+      "items": {
+       "default": {},
+       "$ref": "#/definitions/v1alpha1.VirtualMachineFileRestore"
+      }
+     },
+     "kind": {
+      "description": "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+      "type": "string"
+     },
+     "metadata": {
+      "default": {},
+      "$ref": "#/definitions/k8s.io.apimachinery.pkg.apis.meta.v1.ListMeta"
+     }
+    }
+   },
+   "v1alpha1.VirtualMachineFileRestoreSpec": {
+    "description": "VirtualMachineFileRestoreSpec is the spec for a VirtualMachineFileRestore resource",
+    "type": "object",
+    "required": [
+     "vmiName",
+     "source"
+    ],
+    "properties": {
+     "source": {
+      "description": "Source specifies where to restore files from Exactly one of PVC, Snapshot, or Host must be specified",
+      "default": {},
+      "$ref": "#/definitions/v1alpha1.FileRestoreSource"
+     },
+     "sourcePath": {
+      "description": "SourcePath specifies the path on the source to restore from If empty, the restore volume will be mounted at /backup for manual operation, and will remain mounted until the VirtualMachineFileRestore is deleted.",
+      "type": "string"
+     },
+     "targetPath": {
+      "description": "TargetPath specifies the path on the target VMI to restore to If not specified, defaults to the same path as SourcePath",
+      "type": "string"
+     },
+     "vmiName": {
+      "description": "VMIName specifies the target VirtualMachineInstance name The VMI must be running for the restore operation to proceed",
+      "type": "string",
+      "default": ""
+     }
+    }
+   },
+   "v1alpha1.VirtualMachineFileRestoreStatus": {
+    "description": "VirtualMachineFileRestoreStatus is the status for a VirtualMachineFileRestore resource",
+    "type": "object",
+    "nullable": true,
+    "properties": {
+     "mountPath": {
+      "description": "MountPath is the path where the restore volume is mounted inside the VM guest This is populated when the volume is ready and is useful for manual restore operations",
+      "type": "string"
+     },
+     "phase": {
+      "description": "Phase represents the current phase of the file restore operation",
       "type": "string"
      }
     }

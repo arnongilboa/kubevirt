@@ -644,6 +644,24 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"kubevirt.io/api/export/v1beta1.VirtualMachineExportStatus":                                       schema_kubevirtio_api_export_v1beta1_VirtualMachineExportStatus(ref),
 		"kubevirt.io/api/export/v1beta1.VirtualMachineExportVolume":                                       schema_kubevirtio_api_export_v1beta1_VirtualMachineExportVolume(ref),
 		"kubevirt.io/api/export/v1beta1.VirtualMachineExportVolumeFormat":                                 schema_kubevirtio_api_export_v1beta1_VirtualMachineExportVolumeFormat(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.FileRestoreSource":                                          schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSource(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourceHost":                                      schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSourceHost(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourcePVC":                                       schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSourcePVC(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourceSnapshot":                                  schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSourceSnapshot(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestore":                                  schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestore(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreList":                              schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestoreList(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreSpec":                              schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestoreSpec(ref),
+		"kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreStatus":                            schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestoreStatus(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.GuestTransport":                                            schema_kubevirtio_api_guestcommand_v1alpha1_GuestTransport(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfig":                                               schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKConfig(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfigList":                                           schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKConfigList(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfigSpec":                                           schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKConfigSpec(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VSOCKReference":                                            schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKReference(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommand":                                schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommand(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandCondition":                       schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandCondition(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandList":                            schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandList(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandSpec":                            schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandSpec(ref),
+		"kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandStatus":                          schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandStatus(ref),
 		"kubevirt.io/api/instancetype/v1beta1.CPUInstancetype":                                            schema_kubevirtio_api_instancetype_v1beta1_CPUInstancetype(ref),
 		"kubevirt.io/api/instancetype/v1beta1.CPUPreferenceRequirement":                                   schema_kubevirtio_api_instancetype_v1beta1_CPUPreferenceRequirement(ref),
 		"kubevirt.io/api/instancetype/v1beta1.CPUPreferences":                                             schema_kubevirtio_api_instancetype_v1beta1_CPUPreferences(ref),
@@ -31407,6 +31425,754 @@ func schema_kubevirtio_api_export_v1beta1_VirtualMachineExportVolumeFormat(ref c
 				Required: []string{"format", "url"},
 			},
 		},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSource(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "FileRestoreSource represents the source for file restore operations Exactly one of PVC, Snapshot, or Host must be specified",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"pvc": {
+						SchemaProps: spec.SchemaProps{
+							Description: "PVC specifies a PersistentVolumeClaim in the same namespace as the source",
+							Ref:         ref("kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourcePVC"),
+						},
+					},
+					"snapshot": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Snapshot specifies a VolumeSnapshot in the same namespace as the source",
+							Ref:         ref("kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourceSnapshot"),
+						},
+					},
+					"host": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Host specifies an SSH-able host as the source",
+							Ref:         ref("kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourceHost"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourceHost", "kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourcePVC", "kubevirt.io/api/filerestore/v1alpha1.FileRestoreSourceSnapshot"},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSourceHost(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "FileRestoreSourceHost provides the parameters to restore from an SSH-able host",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"host": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Host specifies the SSH host address (hostname or IP)",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"host"},
+			},
+		},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSourcePVC(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "FileRestoreSourcePVC provides the parameters to restore from a PVC",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the PersistentVolumeClaim in the same namespace",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_FileRestoreSourceSnapshot(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "FileRestoreSourceSnapshot provides the parameters to restore from a VolumeSnapshot",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name of the VolumeSnapshot in the same namespace",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestore(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineFileRestore defines the operation of restoring files to a VM",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta", "kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreSpec", "kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestoreStatus"},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestoreList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineFileRestoreList is a list of VirtualMachineFileRestore resources",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestore"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"metadata", "items"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta", "kubevirt.io/api/filerestore/v1alpha1.VirtualMachineFileRestore"},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestoreSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineFileRestoreSpec is the spec for a VirtualMachineFileRestore resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"vmiName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "VMIName specifies the target VirtualMachineInstance name The VMI must be running for the restore operation to proceed",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"source": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Source specifies where to restore files from Exactly one of PVC, Snapshot, or Host must be specified",
+							Default:     map[string]interface{}{},
+							Ref:         ref("kubevirt.io/api/filerestore/v1alpha1.FileRestoreSource"),
+						},
+					},
+					"sourcePath": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SourcePath specifies the path on the source to restore from If empty, the restore volume will be mounted at /backup for manual operation, and will remain mounted until the VirtualMachineFileRestore is deleted.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"targetPath": {
+						SchemaProps: spec.SchemaProps{
+							Description: "TargetPath specifies the path on the target VMI to restore to If not specified, defaults to the same path as SourcePath",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"vmiName", "source"},
+			},
+		},
+		Dependencies: []string{
+			"kubevirt.io/api/filerestore/v1alpha1.FileRestoreSource"},
+	}
+}
+
+func schema_kubevirtio_api_filerestore_v1alpha1_VirtualMachineFileRestoreStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineFileRestoreStatus is the status for a VirtualMachineFileRestore resource",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Phase represents the current phase of the file restore operation",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"mountPath": {
+						SchemaProps: spec.SchemaProps{
+							Description: "MountPath is the path where the restore volume is mounted inside the VM guest This is populated when the volume is ready and is useful for manual restore operations",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_GuestTransport(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "GuestTransport specifies the transport method for communicating with the guest VM. Currently only VSOCK is supported.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"vsock": {
+						SchemaProps: spec.SchemaProps{
+							Description: "VSOCK specifies a reference to a VSOCKConfig resource for SSH over VSOCK transport.",
+							Ref:         ref("kubevirt.io/api/guestcommand/v1alpha1.VSOCKReference"),
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"kubevirt.io/api/guestcommand/v1alpha1.VSOCKReference"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKConfig(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VSOCKConfig defines VSOCK connection configuration for guest commands",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec defines the VSOCK configuration",
+							Default:     map[string]interface{}{},
+							Ref:         ref("kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfigSpec"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta", "kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfigSpec"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKConfigList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VSOCKConfigList contains a list of VSOCKConfig",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfig"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta", "kubevirt.io/api/guestcommand/v1alpha1.VSOCKConfig"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKConfigSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VSOCKConfigSpec defines the configuration for VSOCK/SSH connections",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"port": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Port specifies the VSOCK port to connect to in the guest. Defaults to 22 (standard SSH port) if not specified.",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"user": {
+						SchemaProps: spec.SchemaProps{
+							Description: "User specifies the SSH user to authenticate as. Defaults to \"root\" if not specified.",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"sshKeySecret": {
+						SchemaProps: spec.SchemaProps{
+							Description: "SSHKeySecret is a reference to a secret containing the SSH private key. The SecretKeySelector's Key field specifies which key in the secret contains the private key (commonly \"ssh-privatekey\"). If not specified, the controller will attempt to use default SSH keys from the node.",
+							Ref:         ref("k8s.io/api/core/v1.SecretKeySelector"),
+						},
+					},
+					"useTLS": {
+						SchemaProps: spec.SchemaProps{
+							Description: "UseTLS specifies whether to use TLS for the VSOCK connection. Defaults to false if not specified.",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/api/core/v1.SecretKeySelector"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VSOCKReference(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VSOCKReference references a VSOCKConfig resource by name in the same namespace.",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"name": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Name is the name of the VSOCKConfig resource in the same namespace.",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+				},
+				Required: []string{"name"},
+			},
+		},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommand(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineGuestCommand defines a command to be executed in a VM guest via SSH over VSOCK",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta"),
+						},
+					},
+					"spec": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Spec defines the desired state of the guest command",
+							Default:     map[string]interface{}{},
+							Ref:         ref("kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandSpec"),
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Status defines the observed state of the guest command",
+							Default:     map[string]interface{}{},
+							Ref:         ref("kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandStatus"),
+						},
+					},
+				},
+				Required: []string{"spec"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ObjectMeta", "kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandSpec", "kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandStatus"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandCondition(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineGuestCommandCondition represents a condition of the guest command",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"type": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"status": {
+						SchemaProps: spec.SchemaProps{
+							Default: "",
+							Type:    []string{"string"},
+							Format:  "",
+						},
+					},
+					"lastProbeTime": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"lastTransitionTime": {
+						SchemaProps: spec.SchemaProps{
+							Ref: ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"reason": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Type:   []string{"string"},
+							Format: "",
+						},
+					},
+				},
+				Required: []string{"type", "status"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandList(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineGuestCommandList contains a list of VirtualMachineGuestCommand",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"kind": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"apiVersion": {
+						SchemaProps: spec.SchemaProps{
+							Description: "APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"metadata": {
+						SchemaProps: spec.SchemaProps{
+							Default: map[string]interface{}{},
+							Ref:     ref("k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta"),
+						},
+					},
+					"items": {
+						SchemaProps: spec.SchemaProps{
+							Type: []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommand"),
+									},
+								},
+							},
+						},
+					},
+				},
+				Required: []string{"items"},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.ListMeta", "kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommand"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandSpec(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineGuestCommandSpec describes the configuration for a guest command execution",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"vmiName": {
+						SchemaProps: spec.SchemaProps{
+							Description: "VMIName specifies the target VirtualMachineInstance name",
+							Default:     "",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"command": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Command is the command to execute. The first element is the command path, and the remaining elements are arguments.",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: "",
+										Type:    []string{"string"},
+										Format:  "",
+									},
+								},
+							},
+						},
+					},
+					"timeout": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Timeout specifies the timeout in seconds for command execution. Defaults to 30 seconds if not specified.",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"runPolicy": {
+						SchemaProps: spec.SchemaProps{
+							Description: "RunPolicy specifies when the command should be executed",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"transport": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Transport specifies the transport configuration for communicating with the guest. References a VSOCKConfig resource by name.",
+							Ref:         ref("kubevirt.io/api/guestcommand/v1alpha1.GuestTransport"),
+						},
+					},
+				},
+				Required: []string{"vmiName", "command"},
+			},
+		},
+		Dependencies: []string{
+			"kubevirt.io/api/guestcommand/v1alpha1.GuestTransport"},
+	}
+}
+
+func schema_kubevirtio_api_guestcommand_v1alpha1_VirtualMachineGuestCommandStatus(ref common.ReferenceCallback) common.OpenAPIDefinition {
+	return common.OpenAPIDefinition{
+		Schema: spec.Schema{
+			SchemaProps: spec.SchemaProps{
+				Description: "VirtualMachineGuestCommandStatus represents the status of a guest command execution",
+				Type:        []string{"object"},
+				Properties: map[string]spec.Schema{
+					"phase": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Phase represents the current phase of command execution",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"exitCode": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ExitCode is the exit code returned by the command",
+							Type:        []string{"integer"},
+							Format:      "int32",
+						},
+					},
+					"stdout": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Stdout contains the standard output from the command",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"stderr": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Stderr contains the standard error output from the command",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"message": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Message provides additional information about the execution",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"reason": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Reason provides a brief CamelCase reason for the phase",
+							Type:        []string{"string"},
+							Format:      "",
+						},
+					},
+					"lastExecutionTime": {
+						SchemaProps: spec.SchemaProps{
+							Description: "LastExecutionTime is the timestamp of the last execution attempt",
+							Ref:         ref("k8s.io/apimachinery/pkg/apis/meta/v1.Time"),
+						},
+					},
+					"observedGeneration": {
+						SchemaProps: spec.SchemaProps{
+							Description: "ObservedGeneration reflects the generation of the most recently observed spec",
+							Type:        []string{"integer"},
+							Format:      "int64",
+						},
+					},
+					"conditions": {
+						VendorExtensible: spec.VendorExtensible{
+							Extensions: spec.Extensions{
+								"x-kubernetes-list-type": "atomic",
+							},
+						},
+						SchemaProps: spec.SchemaProps{
+							Description: "Conditions represent the latest available observations of the command's state",
+							Type:        []string{"array"},
+							Items: &spec.SchemaOrArray{
+								Schema: &spec.Schema{
+									SchemaProps: spec.SchemaProps{
+										Default: map[string]interface{}{},
+										Ref:     ref("kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandCondition"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		Dependencies: []string{
+			"k8s.io/apimachinery/pkg/apis/meta/v1.Time", "kubevirt.io/api/guestcommand/v1alpha1.VirtualMachineGuestCommandCondition"},
 	}
 }
 

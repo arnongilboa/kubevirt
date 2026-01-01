@@ -33,6 +33,8 @@ import (
 	kubevirtv1 "kubevirt.io/client-go/kubevirt/typed/core/v1"
 	exportv1 "kubevirt.io/client-go/kubevirt/typed/export/v1"
 	exportv1beta1 "kubevirt.io/client-go/kubevirt/typed/export/v1beta1"
+	filerestorev1alpha1 "kubevirt.io/client-go/kubevirt/typed/filerestore/v1alpha1"
+	guestcommandv1alpha1 "kubevirt.io/client-go/kubevirt/typed/guestcommand/v1alpha1"
 	instancetypev1beta1 "kubevirt.io/client-go/kubevirt/typed/instancetype/v1beta1"
 	migrationsv1alpha1 "kubevirt.io/client-go/kubevirt/typed/migrations/v1alpha1"
 	poolv1alpha1 "kubevirt.io/client-go/kubevirt/typed/pool/v1alpha1"
@@ -49,6 +51,8 @@ type Interface interface {
 	KubevirtV1() kubevirtv1.KubevirtV1Interface
 	ExportV1beta1() exportv1beta1.ExportV1beta1Interface
 	ExportV1() exportv1.ExportV1Interface
+	FilerestoreV1alpha1() filerestorev1alpha1.FilerestoreV1alpha1Interface
+	GuestcommandV1alpha1() guestcommandv1alpha1.GuestcommandV1alpha1Interface
 	InstancetypeV1beta1() instancetypev1beta1.InstancetypeV1beta1Interface
 	MigrationsV1alpha1() migrationsv1alpha1.MigrationsV1alpha1Interface
 	PoolV1alpha1() poolv1alpha1.PoolV1alpha1Interface
@@ -60,18 +64,20 @@ type Interface interface {
 // Clientset contains the clients for groups.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	backupV1alpha1      *backupv1alpha1.BackupV1alpha1Client
-	cloneV1alpha1       *clonev1alpha1.CloneV1alpha1Client
-	cloneV1beta1        *clonev1beta1.CloneV1beta1Client
-	kubevirtV1          *kubevirtv1.KubevirtV1Client
-	exportV1beta1       *exportv1beta1.ExportV1beta1Client
-	exportV1            *exportv1.ExportV1Client
-	instancetypeV1beta1 *instancetypev1beta1.InstancetypeV1beta1Client
-	migrationsV1alpha1  *migrationsv1alpha1.MigrationsV1alpha1Client
-	poolV1alpha1        *poolv1alpha1.PoolV1alpha1Client
-	poolV1beta1         *poolv1beta1.PoolV1beta1Client
-	snapshotV1alpha1    *snapshotv1alpha1.SnapshotV1alpha1Client
-	snapshotV1beta1     *snapshotv1beta1.SnapshotV1beta1Client
+	backupV1alpha1       *backupv1alpha1.BackupV1alpha1Client
+	cloneV1alpha1        *clonev1alpha1.CloneV1alpha1Client
+	cloneV1beta1         *clonev1beta1.CloneV1beta1Client
+	kubevirtV1           *kubevirtv1.KubevirtV1Client
+	exportV1beta1        *exportv1beta1.ExportV1beta1Client
+	exportV1             *exportv1.ExportV1Client
+	filerestoreV1alpha1  *filerestorev1alpha1.FilerestoreV1alpha1Client
+	guestcommandV1alpha1 *guestcommandv1alpha1.GuestcommandV1alpha1Client
+	instancetypeV1beta1  *instancetypev1beta1.InstancetypeV1beta1Client
+	migrationsV1alpha1   *migrationsv1alpha1.MigrationsV1alpha1Client
+	poolV1alpha1         *poolv1alpha1.PoolV1alpha1Client
+	poolV1beta1          *poolv1beta1.PoolV1beta1Client
+	snapshotV1alpha1     *snapshotv1alpha1.SnapshotV1alpha1Client
+	snapshotV1beta1      *snapshotv1beta1.SnapshotV1beta1Client
 }
 
 // BackupV1alpha1 retrieves the BackupV1alpha1Client
@@ -102,6 +108,16 @@ func (c *Clientset) ExportV1beta1() exportv1beta1.ExportV1beta1Interface {
 // ExportV1 retrieves the ExportV1Client
 func (c *Clientset) ExportV1() exportv1.ExportV1Interface {
 	return c.exportV1
+}
+
+// FilerestoreV1alpha1 retrieves the FilerestoreV1alpha1Client
+func (c *Clientset) FilerestoreV1alpha1() filerestorev1alpha1.FilerestoreV1alpha1Interface {
+	return c.filerestoreV1alpha1
+}
+
+// GuestcommandV1alpha1 retrieves the GuestcommandV1alpha1Client
+func (c *Clientset) GuestcommandV1alpha1() guestcommandv1alpha1.GuestcommandV1alpha1Interface {
+	return c.guestcommandV1alpha1
 }
 
 // InstancetypeV1beta1 retrieves the InstancetypeV1beta1Client
@@ -202,6 +218,14 @@ func NewForConfigAndClient(c *rest.Config, httpClient *http.Client) (*Clientset,
 	if err != nil {
 		return nil, err
 	}
+	cs.filerestoreV1alpha1, err = filerestorev1alpha1.NewForConfigAndClient(&configShallowCopy, httpClient)
+	if err != nil {
+		return nil, err
+	}
+	cs.guestcommandV1alpha1, err = guestcommandv1alpha1.NewForConfigAndClient(&configShallowCopy, httpClient)
+	if err != nil {
+		return nil, err
+	}
 	cs.instancetypeV1beta1, err = instancetypev1beta1.NewForConfigAndClient(&configShallowCopy, httpClient)
 	if err != nil {
 		return nil, err
@@ -253,6 +277,8 @@ func New(c rest.Interface) *Clientset {
 	cs.kubevirtV1 = kubevirtv1.New(c)
 	cs.exportV1beta1 = exportv1beta1.New(c)
 	cs.exportV1 = exportv1.New(c)
+	cs.filerestoreV1alpha1 = filerestorev1alpha1.New(c)
+	cs.guestcommandV1alpha1 = guestcommandv1alpha1.New(c)
 	cs.instancetypeV1beta1 = instancetypev1beta1.New(c)
 	cs.migrationsV1alpha1 = migrationsv1alpha1.New(c)
 	cs.poolV1alpha1 = poolv1alpha1.New(c)

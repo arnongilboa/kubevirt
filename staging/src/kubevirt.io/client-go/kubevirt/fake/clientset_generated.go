@@ -39,6 +39,10 @@ import (
 	fakeexportv1 "kubevirt.io/client-go/kubevirt/typed/export/v1/fake"
 	exportv1beta1 "kubevirt.io/client-go/kubevirt/typed/export/v1beta1"
 	fakeexportv1beta1 "kubevirt.io/client-go/kubevirt/typed/export/v1beta1/fake"
+	filerestorev1alpha1 "kubevirt.io/client-go/kubevirt/typed/filerestore/v1alpha1"
+	fakefilerestorev1alpha1 "kubevirt.io/client-go/kubevirt/typed/filerestore/v1alpha1/fake"
+	guestcommandv1alpha1 "kubevirt.io/client-go/kubevirt/typed/guestcommand/v1alpha1"
+	fakeguestcommandv1alpha1 "kubevirt.io/client-go/kubevirt/typed/guestcommand/v1alpha1/fake"
 	instancetypev1beta1 "kubevirt.io/client-go/kubevirt/typed/instancetype/v1beta1"
 	fakeinstancetypev1beta1 "kubevirt.io/client-go/kubevirt/typed/instancetype/v1beta1/fake"
 	migrationsv1alpha1 "kubevirt.io/client-go/kubevirt/typed/migrations/v1alpha1"
@@ -135,6 +139,16 @@ func (c *Clientset) ExportV1beta1() exportv1beta1.ExportV1beta1Interface {
 // ExportV1 retrieves the ExportV1Client
 func (c *Clientset) ExportV1() exportv1.ExportV1Interface {
 	return &fakeexportv1.FakeExportV1{Fake: &c.Fake}
+}
+
+// FilerestoreV1alpha1 retrieves the FilerestoreV1alpha1Client
+func (c *Clientset) FilerestoreV1alpha1() filerestorev1alpha1.FilerestoreV1alpha1Interface {
+	return &fakefilerestorev1alpha1.FakeFilerestoreV1alpha1{Fake: &c.Fake}
+}
+
+// GuestcommandV1alpha1 retrieves the GuestcommandV1alpha1Client
+func (c *Clientset) GuestcommandV1alpha1() guestcommandv1alpha1.GuestcommandV1alpha1Interface {
+	return &fakeguestcommandv1alpha1.FakeGuestcommandV1alpha1{Fake: &c.Fake}
 }
 
 // InstancetypeV1beta1 retrieves the InstancetypeV1beta1Client

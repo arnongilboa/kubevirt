@@ -500,6 +500,8 @@ func GenerateCurrentInstallStrategy(config *operatorutil.KubeVirtDeploymentConfi
 		components.NewVirtualMachineClusterPreferenceCrd, components.NewVirtualMachineExportCrd,
 		components.NewVirtualMachineCloneCrd, components.NewVirtualMachineBackupCrd,
 		components.NewVirtualMachineBackupTrackerCrd,
+		components.NewVirtualMachineGuestCommandCrd, components.NewVSOCKConfigCrd,
+		components.NewVirtualMachineFileRestoreCrd,
 	}
 	for _, f := range functions {
 		crd, err := f()

@@ -19,7 +19,7 @@
 
 package kubecli
 
-//go:generate mockgen -destination=generated_mock_kubevirt.go -package=kubecli kubevirt.io/client-go/kubecli KubevirtClient,VirtualMachineInstanceInterface,ReplicaSetInterface,VirtualMachineInstancePresetInterface,VirtualMachineInterface,VirtualMachineInstanceMigrationInterface,KubeVirtInterface,ServerVersionInterface,ExpandSpecInterface
+//go:generate mockgen -destination=generated_mock_kubevirt.go -package=kubecli kubevirt.io/client-go/kubecli KubevirtClient,VirtualMachineInstanceInterface,ReplicaSetInterface,VirtualMachineInstancePresetInterface,VirtualMachineInterface,VirtualMachineInstanceMigrationInterface,KubeVirtInterface,ServerVersionInterface,ExpandSpecInterface,VirtualMachineGuestCommandInterface
 
 /*
  ATTENTION: Rerun code generators when interface signatures are modified.
@@ -31,6 +31,7 @@ import (
 	routev1 "github.com/openshift/client-go/route/clientset/versioned/typed/route/v1"
 
 	clone "kubevirt.io/client-go/kubevirt/typed/clone/v1beta1"
+	filerestorev1alpha1 "kubevirt.io/client-go/kubevirt/typed/filerestore/v1alpha1"
 
 	secv1 "github.com/openshift/client-go/security/clientset/versioned/typed/security/v1"
 	extclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -46,6 +47,7 @@ import (
 	backupv1 "kubevirt.io/client-go/kubevirt/typed/backup/v1alpha1"
 	kvcorev1 "kubevirt.io/client-go/kubevirt/typed/core/v1"
 	exportv1 "kubevirt.io/client-go/kubevirt/typed/export/v1"
+	guestcommandv1alpha1 "kubevirt.io/client-go/kubevirt/typed/guestcommand/v1alpha1"
 	instancetypev1beta1 "kubevirt.io/client-go/kubevirt/typed/instancetype/v1beta1"
 	migrationsv1 "kubevirt.io/client-go/kubevirt/typed/migrations/v1alpha1"
 	poolv1 "kubevirt.io/client-go/kubevirt/typed/pool/v1beta1"
@@ -77,6 +79,9 @@ type KubevirtClient interface {
 	ExpandSpec(namespace string) ExpandSpecInterface
 	ServerVersion() ServerVersionInterface
 	VirtualMachineClone(namespace string) clone.VirtualMachineCloneInterface
+	VirtualMachineGuestCommand(namespace string) VirtualMachineGuestCommandInterface
+	VSOCKConfig(namespace string) VSOCKConfigInterface
+	VirtualMachineFileRestore(namespace string) filerestorev1alpha1.VirtualMachineFileRestoreInterface
 	ClusterProfiler() *ClusterProfiler
 	GuestfsVersion() *GuestfsVersion
 	RestClient() *rest.RESTClient
@@ -236,6 +241,26 @@ func (k kubevirtClient) VirtualMachineClone(namespace string) clone.VirtualMachi
 
 func (k kubevirtClient) VirtualMachineCloneClient() *clone.CloneV1beta1Client {
 	return k.cloneClient // TODO ihol3 delete function? who's using it?
+}
+
+func (k kubevirtClient) VirtualMachineGuestCommand(namespace string) VirtualMachineGuestCommandInterface {
+	return k.generatedKubeVirtClient.GuestcommandV1alpha1().VirtualMachineGuestCommands(namespace)
+}
+
+func (k kubevirtClient) VSOCKConfig(namespace string) VSOCKConfigInterface {
+	return k.generatedKubeVirtClient.GuestcommandV1alpha1().VSOCKConfigs(namespace)
+}
+
+func (k kubevirtClient) VirtualMachineFileRestore(namespace string) filerestorev1alpha1.VirtualMachineFileRestoreInterface {
+	return k.generatedKubeVirtClient.FilerestoreV1alpha1().VirtualMachineFileRestores(namespace)
+}
+
+type VirtualMachineGuestCommandInterface interface {
+	guestcommandv1alpha1.VirtualMachineGuestCommandInterface
+}
+
+type VSOCKConfigInterface interface {
+	guestcommandv1alpha1.VSOCKConfigInterface
 }
 
 type VirtualMachineInstanceInterface interface {

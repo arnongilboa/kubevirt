@@ -261,6 +261,7 @@ func (app *virtHandlerApp) Run() {
 	vmiSourceInformer := factory.VMISourceHost(app.HostOverride)
 	vmiTargetInformer := factory.VMITargetHost(app.HostOverride)
 	backupTrackerInformer := factory.VirtualMachineBackupTracker()
+	guestCommandInformer := factory.VirtualMachineGuestCommand()
 
 	// Wire Domain controller
 	domainSharedInformer := virtcache.NewSharedInformer(app.VirtShareDir, int(app.WatchdogTimeoutDuration.Seconds()), recorder, vmiInformer.GetStore(), time.Duration(app.domainResyncPeriodSeconds)*time.Second)
@@ -388,6 +389,7 @@ func (app *virtHandlerApp) Run() {
 		factory.KubeVirt().HasSynced,
 		nodeInformer.HasSynced,
 		backupTrackerInformer.HasSynced,
+		guestCommandInformer.HasSynced,
 	)
 
 	migrationSourceController, err := virthandler.NewMigrationSourceController(
@@ -460,6 +462,13 @@ func (app *virtHandlerApp) Run() {
 		panic(err)
 	}
 
+	guestCommandController := virthandler.NewGuestCommandController(
+		app.virtCli,
+		vmiInformer,
+		guestCommandInformer,
+		recorder,
+	)
+
 	promErrCh := make(chan error)
 	go app.runPrometheusServer(promErrCh)
 
@@ -507,6 +516,7 @@ func (app *virtHandlerApp) Run() {
 	go migrationTargetController.Run(5, stop)
 	go vmController.Run(10, stop)
 	go ksmHandler.Run(stop)
+	go guestCommandController.Run(context.Background(), 3)
 
 	doneCh := make(chan string)
 	defer close(doneCh)
